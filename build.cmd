@@ -25,7 +25,11 @@ for %%p in (freerdp openssl zlib cjson) do copy /y "native\RdpBridge\vcpkg_insta
 rem Release package for the update button: ZIP + SHA-256 checksum.
 for /f "usebackq delims=" %%v in (`powershell -NoProfile -Command "(([xml](Get-Content 'src\RdpMonitorSwitcher\RdpMonitorSwitcher.csproj')).Project.PropertyGroup.Version | Where-Object { $_ }) | Select-Object -First 1"`) do set "VERSION=%%v"
 set "PKG=dist\RdpMonitorSwitcher-%VERSION%-win-x64.zip"
-powershell -NoProfile -Command "Compress-Archive -Path 'dist\RdpMonitorSwitcher\*' -DestinationPath '%PKG%' -Force; $h = (Get-FileHash '%PKG%' -Algorithm SHA256).Hash; Set-Content -Path '%PKG%.sha256' -Value ($h + '  ' + (Split-Path '%PKG%' -Leaf)) -NoNewline -Encoding ascii" || exit /b 1
+rem tar.exe (bsdtar, part of Windows 10/11) writes standard ZIP paths; Compress-Archive of
+rem Windows PowerShell 5.1 writes backslashes, which other unzip tools mishandle.
+if exist "%PKG%" del "%PKG%"
+tar.exe -a -c -f "%PKG%" -C dist\RdpMonitorSwitcher * || exit /b 1
+powershell -NoProfile -Command "$h = (Get-FileHash '%PKG%' -Algorithm SHA256).Hash; Set-Content -Path '%PKG%.sha256' -Value ($h + '  ' + (Split-Path '%PKG%' -Leaf)) -NoNewline -Encoding ascii" || exit /b 1
 
 echo.
 echo Done: %~dp0dist\RdpMonitorSwitcher\RdpMonitorSwitcher.exe
