@@ -1,0 +1,58 @@
+<Window x:Class="RdpMonitorSwitcher.Views.MonitorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:RdpMonitorSwitcher.Views"
+        Title="{Binding Title}"
+        Width="960" Height="600" MinWidth="320" MinHeight="240"
+        Background="#FF1B1B1B" Foreground="{StaticResource TextBrush}"
+        UseLayoutRounding="True" ShowInTaskbar="True">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <views:RemoteViewport x:Name="Viewport" Grid.Row="1" />
+
+        <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,24" MaxWidth="560"
+                Background="{StaticResource ErrorBrush}" CornerRadius="6" Padding="12,8"
+                Visibility="{Binding ErrorMessage, Converter={x:Static views:Converters.NotNullToVisibility}}">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="✕" Command="{Binding DismissErrorCommand}" />
+                <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <Border x:Name="HotZone" Grid.Row="1" Height="4" VerticalAlignment="Top" Background="#01000000" />
+
+        <Border x:Name="Toolbar" Grid.Row="0" Background="{StaticResource ToolbarBrush}"
+                BorderBrush="{StaticResource ToolbarBorderBrush}" BorderThickness="0,0,0,1" Padding="6,4" Panel.ZIndex="10">
+            <DockPanel LastChildFill="False">
+                <Button DockPanel.Dock="Left" Style="{StaticResource ToolButton}" Content="◀"
+                        Command="{Binding PreviousMonitorCommand}" ToolTip="Vorheriger Monitor (Strg+Alt+←)" />
+                <ItemsControl DockPanel.Dock="Left" ItemsSource="{Binding MonitorButtons}"
+                              ItemTemplate="{StaticResource MonitorButtonTemplate}" Focusable="False">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <Button DockPanel.Dock="Left" Style="{StaticResource ToolButton}" Content="▶"
+                        Command="{Binding NextMonitorCommand}" ToolTip="Nächster Monitor (Strg+Alt+→)" />
+
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="✕ Schließen"
+                        Command="{Binding CloseCommand}" ToolTip="Dieses Monitorfenster schließen (Sitzung bleibt bestehen)" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Command="{Binding ToggleFullscreenCommand}"
+                        ToolTip="Vollbild (Strg+Alt+Enter)">
+                    <TextBlock Text="{Binding IsFullscreen, Converter={x:Static views:Converters.FullscreenLabel}}" />
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Command="{Binding ToggleScalingCommand}">
+                    <TextBlock Text="{Binding Scaling, Converter={x:Static views:Converters.ScalingLabel}}" />
+                </Button>
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="▲" FontSize="10"
+                        Command="{Binding ToggleToolbarCommand}" ToolTip="Toolbar ausblenden (Strg+Alt+T)" />
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>
