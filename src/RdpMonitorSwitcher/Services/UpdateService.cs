@@ -194,11 +194,11 @@ internal sealed class UpdateService
                 {
                     var backup = destination + ".old";
                     if (File.Exists(backup))
-                        File.Delete(backup);
-                    File.Move(destination, backup);
+                        WithRetry(() => File.Delete(backup));
+                    WithRetry(() => File.Move(destination, backup));
                     moved.Add((destination, backup));
                 }
-                File.Copy(file, destination);
+                WithRetry(() => File.Copy(file, destination));
                 created.Add(destination);
             }
         }
@@ -213,6 +213,30 @@ internal sealed class UpdateService
                 try { File.Move(backup, original, overwrite: true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
             }
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Virus scanners (e.g. Windows Defender) briefly lock freshly written or touched DLLs;
+    /// retry a few times before giving up.
+    /// </summary>
+    private static void WithRetry(Action action)
+    {
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                action();
+                return;
+            }
+            catch (IOException) when (attempt < 10)
+            {
+                Thread.Sleep(300 * attempt);
+            }
+            catch (UnauthorizedAccessException) when (attempt < 10)
+            {
+                Thread.Sleep(300 * attempt);
+            }
         }
     }
 
