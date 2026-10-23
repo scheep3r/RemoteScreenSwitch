@@ -13,7 +13,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AssemblyTitle>RDP Monitor Switcher</AssemblyTitle>
     <Product>RDP Monitor Switcher</Product>
-    <Version>1.2.0</Version>
+    <Version>1.2.1</Version>
     <UpdateRepository>scheep3r/RemoteScreenSwitch</UpdateRepository>
   </PropertyGroup>
 
