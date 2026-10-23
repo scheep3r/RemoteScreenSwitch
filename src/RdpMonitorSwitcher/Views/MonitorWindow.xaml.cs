@@ -16,6 +16,7 @@ public partial class MonitorWindow : Window
         DataContext = view;
         Viewport.Attach(services, view);
         _chrome = new WindowChrome(this, view, Toolbar, HotZone);
+        BannerAutoHide.Attach(ErrorBanner, view, nameof(view.ErrorMessage), () => view.ErrorMessage, () => view.DismissErrorCommand.Execute(null));
         Loaded += (_, _) => Viewport.Focus();
         Closed += (_, _) => Viewport.Detach();
     }

@@ -49,14 +49,14 @@
 
         <!-- Error / notice banners -->
         <StackPanel Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,24" MaxWidth="720">
-            <Border Background="{StaticResource ErrorBrush}" CornerRadius="6" Padding="12,8" Margin="0,4"
+            <Border x:Name="ErrorBanner" Background="{StaticResource ErrorBrush}" CornerRadius="6" Padding="12,8" Margin="0,4"
                     Visibility="{Binding MainView.ErrorMessage, Converter={x:Static views:Converters.NotNullToVisibility}}">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="✕" Command="{Binding MainView.DismissErrorCommand}" />
                     <TextBlock Text="{Binding MainView.ErrorMessage}" TextWrapping="Wrap" VerticalAlignment="Center" />
                 </DockPanel>
             </Border>
-            <Border Background="#FF33415C" CornerRadius="6" Padding="12,8" Margin="0,4"
+            <Border x:Name="NoticeBanner" Background="#FF33415C" CornerRadius="6" Padding="12,8" Margin="0,4"
                     Visibility="{Binding Notice, Converter={x:Static views:Converters.NotNullToVisibility}}">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="✕" Command="{Binding DismissNoticeCommand}" />

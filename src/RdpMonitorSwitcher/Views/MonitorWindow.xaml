@@ -14,7 +14,7 @@
 
         <views:RemoteViewport x:Name="Viewport" Grid.Row="1" />
 
-        <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,24" MaxWidth="560"
+        <Border x:Name="ErrorBanner" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,24" MaxWidth="560"
                 Background="{StaticResource ErrorBrush}" CornerRadius="6" Padding="12,8"
                 Visibility="{Binding ErrorMessage, Converter={x:Static views:Converters.NotNullToVisibility}}">
             <DockPanel>

@@ -21,6 +21,10 @@ public partial class MainWindow : Window
         WindowPlacementHelper.Restore(this, services.Main.Settings.MainWindow);
         SourceInitialized += (_, _) => services.Clipboard.Attach(this);
         Loaded += (_, _) => Viewport.Focus();
+        var main = services.Main;
+        BannerAutoHide.Attach(NoticeBanner, main, nameof(main.Notice), () => main.Notice, () => main.Notice = null);
+        BannerAutoHide.Attach(ErrorBanner, main.MainView, nameof(main.MainView.ErrorMessage),
+            () => main.MainView.ErrorMessage, () => main.MainView.DismissErrorCommand.Execute(null));
     }
 
     protected override void OnClosing(CancelEventArgs e)
