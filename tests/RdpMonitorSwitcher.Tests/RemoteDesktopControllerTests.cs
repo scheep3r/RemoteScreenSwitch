@@ -277,4 +277,26 @@ public class RemoteDesktopControllerTests
 
         Assert.Equal(ConnectionState.Reconnecting, _controller.State);
     }
+
+    [Fact]
+    public void FocusAgentEvents_AreForwarded_AndIgnoredFromOldSessions()
+    {
+        var points = new List<PixelPoint>();
+        _controller.RemoteForeground += (_, p) => points.Add(p);
+        var first = ConnectAndEstablish();
+
+        first.RaiseFocusAgent(true);
+        first.RaiseRemoteForeground(100, 200);
+        Assert.True(_controller.IsFocusAgentConnected);
+        Assert.Equal([new PixelPoint(100, 200)], points);
+
+        first.RaiseDisconnected(DisconnectReason.Network);
+        Assert.False(_controller.IsFocusAgentConnected);
+
+        _time.Advance(TimeSpan.FromSeconds(1));
+        first.RaiseFocusAgent(true); // stale
+        first.RaiseRemoteForeground(1, 1);
+        Assert.False(_controller.IsFocusAgentConnected);
+        Assert.Single(points);
+    }
 }

@@ -29,6 +29,9 @@ public sealed class AppSettings
     /// <summary>Automatic "drag files out of the remote PC" zone.</summary>
     public DragOutSettings DragOut { get; set; } = new();
 
+    /// <summary>Show the monitor of the window that comes to the front (needs the helper on the remote PC).</summary>
+    public bool FollowRemoteForeground { get; set; } = true;
+
     public ConnectionProfile? FindProfile(string? key) =>
         key is null ? null : Profiles.FirstOrDefault(p => p.Key == key);
 

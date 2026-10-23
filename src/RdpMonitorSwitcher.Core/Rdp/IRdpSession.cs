@@ -87,6 +87,12 @@ public interface IRdpSession : IDisposable
     /// <summary>The remote PC answered our clipboard offer (true = accepted).</summary>
     event EventHandler<bool>? LocalClipboardAccepted;
 
+    /// <summary>The helper on the remote PC opened (true) or closed (false) its channel.</summary>
+    event EventHandler<bool>? FocusAgentChanged;
+
+    /// <summary>A window came to the front on the remote PC; the point lies on its monitor (frame buffer coordinates).</summary>
+    event EventHandler<PixelPoint>? RemoteForeground;
+
     /// <summary>Called on a background thread while connecting. Blocks the connection until answered.</summary>
     Func<CertificateInfo, CertificateDecision>? CertificateRequested { get; set; }
 

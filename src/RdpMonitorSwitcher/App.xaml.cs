@@ -1,7 +1,9 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
+using RdpMonitorSwitcher.Agent;
 using RdpMonitorSwitcher.Core.Configuration;
 using RdpMonitorSwitcher.Core.Services;
 using RdpMonitorSwitcher.Core.ViewModels;
@@ -17,6 +19,9 @@ public partial class App : Application
 {
     private ILoggerFactory? _loggerFactory;
     private AppServices? _services;
+    private FocusAgent? _helper;
+    private Mutex? _helperMutex;
+    private RegisteredWaitHandle? _helperStopWait;
 
     public static string DataDirectory { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RdpMonitorSwitcher");
@@ -24,16 +29,23 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        var isHelper = e.Args.Any(a => string.Equals(a, AgentSetup.Argument, StringComparison.OrdinalIgnoreCase));
 
         var logDirectory = Path.Combine(DataDirectory, "logs");
         Directory.CreateDirectory(logDirectory);
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
-            .WriteTo.File(Path.Combine(logDirectory, "app-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7)
+            .WriteTo.File(Path.Combine(logDirectory, isHelper ? "helper-.log" : "app-.log"), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 7, shared: isHelper)
             .CreateLogger();
         _loggerFactory = LoggerFactory.Create(builder => builder.AddSerilog(dispose: true));
         var log = _loggerFactory.CreateLogger<App>();
         log.LogInformation("Starting RDP Monitor Switcher {Version}", typeof(App).Assembly.GetName().Version);
+
+        if (isHelper)
+        {
+            StartHelper(log);
+            return;
+        }
 
         DispatcherUnhandledException += (_, args) =>
         {
@@ -83,12 +95,51 @@ public partial class App : Application
             _loggerFactory.CreateLogger<FileTransferService>());
         FileTransferService.CleanupOldTransfers(TimeSpan.FromDays(1));
         UpdateService.CleanupAfterUpdate();
+        TryStartHelper(log);
         services.Updates = new UpdateService(main, _loggerFactory.CreateLogger<UpdateService>());
 
         var window = new MainWindow(services);
         MainWindow = window;
         window.Show();
         _ = services.Updates.CheckAsync(interactive: false);
+    }
+
+    /// <summary>"--agent": the helper on the controlled PC, without any window (see <see cref="FocusAgent"/>).</summary>
+    private void StartHelper(Microsoft.Extensions.Logging.ILogger log)
+    {
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        DispatcherUnhandledException += (_, args) =>
+        {
+            log.LogError(args.Exception, "Unhandled helper exception");
+            args.Handled = true;
+        };
+        _helperMutex = new Mutex(true, AgentSetup.MutexName, out var created);
+        if (!created)
+        {
+            log.LogInformation("Helper is already running in this session");
+            _helperMutex.Dispose();
+            _helperMutex = null;
+            Shutdown();
+            return;
+        }
+        var stop = new EventWaitHandle(false, EventResetMode.AutoReset, AgentSetup.StopEventName);
+        _helperStopWait = ThreadPool.RegisterWaitForSingleObject(stop,
+            (_, _) => Dispatcher.BeginInvoke(() => Shutdown()), null, Timeout.Infinite, executeOnlyOnce: true);
+        _helper = new FocusAgent(log);
+        _helper.Start();
+    }
+
+    /// <summary>Restarts the helper if it is set up on this PC but not running (e.g. after an update).</summary>
+    private static void TryStartHelper(Microsoft.Extensions.Logging.ILogger log)
+    {
+        try
+        {
+            AgentSetup.EnsureRunning();
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException or UnauthorizedAccessException or System.Security.SecurityException)
+        {
+            log.LogWarning(ex, "Could not start the helper");
+        }
     }
 
     private static bool CheckNativeBridge(string logDirectory, Microsoft.Extensions.Logging.ILogger log)
@@ -121,6 +172,10 @@ public partial class App : Application
             _services.Cursors.Dispose();
             FreeRdpSession.WaitForPendingShutdowns(TimeSpan.FromSeconds(3));
         }
+        _helper?.Dispose();
+        _helperStopWait?.Unregister(null);
+        _helperMutex?.ReleaseMutex();
+        _helperMutex?.Dispose();
         _loggerFactory?.Dispose();
         Log.CloseAndFlush();
         base.OnExit(e);

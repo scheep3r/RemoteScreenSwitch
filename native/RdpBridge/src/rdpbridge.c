@@ -739,6 +739,9 @@ RB_API rb_session* RB_CALL rb_create(const rb_callbacks* callbacks)
 	s->context = freerdp_client_context_new(&ep);
 	if (!s->context)
 		goto fail;
+	/* after freerdp_client_context_new, which registers the default provider */
+	if (!rb_focus_register_provider())
+		goto fail;
 	((rbContext*)s->context)->session = s;
 	return s;
 
@@ -834,6 +837,8 @@ static BOOL apply_settings(rdpSettings* settings, const rb_connect_params* p)
 
 	if (ok && p->keyboard_layout)
 		ok = freerdp_settings_set_uint32(settings, FreeRDP_KeyboardLayout, p->keyboard_layout);
+	if (ok)
+		ok = rb_focus_add_channel(settings);
 
 	free(monitors);
 	return ok;

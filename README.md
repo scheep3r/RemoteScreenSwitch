@@ -52,7 +52,7 @@ Remote Desktop with TeamViewer-style monitor switching: **one** RDP connection t
 - Recommended: Network Level Authentication (NLA) on (the default).
 - For live monitor changes: Windows 8.1 / Server 2012 R2 or newer (Display Control).
 - Group policy "Limit maximum number of monitors" (default 16) must allow at least as many monitors as you want.
-- **No extra software** on the remote PC.
+- **No extra software** on the remote PC. Only the optional "follow the active window" feature needs the helper (see 4.).
 
 ### Reaching the remote PC
 The app speaks plain RDP, so it works on any route RDP gets through. While disconnected, the app shows the same guide under **"Einrichtung: Wie erreiche ich meinen PC?"**.
@@ -128,6 +128,14 @@ FRITZ!Box: *Home Network → Network → Network Settings → "Allow access for 
 
 ### Updates
 **⟳** in the toolbar checks GitHub for a new version. If there is one, the app downloads it, checks the SHA-256 checksum, replaces its files and restarts. Settings and saved passwords stay. At startup the app checks silently and only shows a notice. The app folder must be writable (e.g. not under `C:\Program Files`).
+
+### Following the active window (optional helper on the remote PC)
+When you click a program in the remote taskbar (or Alt+Tab to it), the main window switches to the monitor that program is on. If a separate monitor window already shows that monitor, nothing changes. Switch it off in **⚙ → Monitor automatisch wechseln**.
+
+RDP doesn't tell the client where windows are, so this needs a small helper on the remote PC:
+1. Copy the app to the remote PC, start it there once, open **⚙** and click **"Auf diesem PC einrichten"**.
+2. That's it. The helper is the same exe started with `--agent`. It has no window, needs no admin rights, and starts with Windows (autostart entry for the current user). It listens for "window came to the front" events, so it uses no CPU while idle (about 50 MB RAM). It sends only the centre of the active window's monitor, over a dynamic virtual channel inside the existing RDP connection (`RdpMonitorSwitcher.Focus`), so there is no extra port and no firewall rule.
+3. With mstsc or other RDP clients the helper just stays idle. Remove it with the same button. Updates via ⟳ on the remote PC restart it automatically.
 
 ### Other features
 - **Anpassen / 1:1** (Fit / 1:1): scaled to the window, or original pixels with scrollbars.

@@ -47,6 +47,29 @@
         <TextBlock TextWrapping="Wrap" Margin="0,12,0,0" FontSize="11" Foreground="Gray"
                    Text="Voraussetzung: „Zwischenablage teilen“ ist in der Verbindung aktiviert. Die Zone gilt für jedes Remote-Fenster (auch die separaten Monitorfenster); auch Ziehen über den Fensterrand hinaus löst sie aus." />
 
+        <Separator Margin="0,16" />
+
+        <TextBlock Text="Monitor automatisch wechseln" FontSize="15" FontWeight="SemiBold" />
+        <TextBlock TextWrapping="Wrap" Margin="0,6,0,10" Foreground="#555">
+            Klickst du im Remote-PC z. B. ein Programm in der Taskleiste an, zeigt das Hauptfenster automatisch den Monitor,
+            auf dem das Programm im Vordergrund ist. Ist der Monitor schon in einem Fenster zu sehen, passiert nichts.
+        </TextBlock>
+        <CheckBox x:Name="FollowBox" Content="Zum Monitor des aktiven Fensters wechseln" Margin="0,0,0,6" />
+        <TextBlock x:Name="RemoteHelperStatus" TextWrapping="Wrap" Margin="20,0,0,0" FontSize="12" />
+
+        <Separator Margin="0,16" />
+
+        <TextBlock Text="Hilfsprogramm auf dem Remote-PC" FontSize="15" FontWeight="SemiBold" />
+        <TextBlock TextWrapping="Wrap" Margin="0,6,0,10" Foreground="#555">
+            Der automatische Wechsel braucht ein kleines Hilfsprogramm auf dem PC, der ferngesteuert wird: ohne Fenster,
+            startet mit Windows, keine Adminrechte, meldet nur, auf welchem Monitor das aktive Fenster liegt.
+            Kopiere diese App auf den Remote-PC, öffne sie dort einmal und klicke dort auf diesen Knopf:
+        </TextBlock>
+        <StackPanel Orientation="Horizontal">
+            <Button x:Name="HelperButton" MinWidth="96" Padding="10,4" Click="OnToggleHelper" />
+            <TextBlock x:Name="LocalHelperStatus" VerticalAlignment="Center" Margin="12,0,0,0" FontSize="12" />
+        </StackPanel>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button Content="Speichern" IsDefault="True" MinWidth="96" Padding="10,4" Margin="0,0,8,0" Click="OnSave" />
             <Button Content="Abbrechen" IsCancel="True" MinWidth="96" Padding="10,4" />

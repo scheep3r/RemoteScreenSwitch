@@ -71,6 +71,17 @@ public sealed class MonitorLayout : IEquatable<MonitorLayout>
         return new PixelSize(width, height);
     }
 
+    /// <summary>The monitor containing the point, or the nearest one.</summary>
+    public RemoteMonitor FindMonitorAt(PixelPoint point) =>
+        Monitors.MinBy(m => DistanceSquared(m.Bounds, point))!;
+
+    private static long DistanceSquared(PixelRect r, PixelPoint p)
+    {
+        long dx = p.X < r.X ? r.X - p.X : p.X >= r.Right ? p.X - r.Right + 1 : 0;
+        long dy = p.Y < r.Y ? r.Y - p.Y : p.Y >= r.Bottom ? p.Y - r.Bottom + 1 : 0;
+        return dx * dx + dy * dy;
+    }
+
     public IReadOnlyList<PixelSize> Sizes => Monitors.Select(m => m.Bounds.Size).ToList();
 
     public bool Equals(MonitorLayout? other) =>

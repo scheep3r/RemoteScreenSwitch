@@ -54,6 +54,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         _controller.StateChanged += (_, _) => OnControllerStateChanged();
         _controller.LayoutChanged += (_, _) => OnLayoutChanged();
         _controller.Notice += (_, message) => Notice = message;
+        _controller.FocusAgentChanged += (_, _) => OnPropertyChanged(nameof(IsFocusAgentConnected));
+        _controller.RemoteForeground += (_, point) => FollowRemoteForeground(point);
         _controller.CertificateHandler = info => _dialogs.ConfirmCertificate(info);
     }
 
@@ -269,6 +271,30 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>Applies new drag-out settings and saves them.</summary>
+    /// <summary>The helper on the remote PC is running and reports the foreground window.</summary>
+    public bool IsFocusAgentConnected => _controller.IsFocusAgentConnected;
+
+    public void UpdateFollowRemoteForeground(bool enabled)
+    {
+        _settings.FollowRemoteForeground = enabled;
+        SaveSettings();
+    }
+
+    /// <summary>
+    /// A window came to the front on the remote PC: show its monitor in the main window,
+    /// unless the main window or a separate monitor window already shows it.
+    /// </summary>
+    private void FollowRemoteForeground(PixelPoint point)
+    {
+        if (!_settings.FollowRemoteForeground || !IsConnected || _controller.Layout is not { } layout)
+            return;
+        var monitor = layout.FindMonitorAt(point);
+        if (AllViews.Any(view => view.SelectedIndex == monitor.Index))
+            return;
+        _log.LogDebug("Following the remote foreground window to monitor {Monitor}", monitor.Number);
+        MainView.SelectMonitorCommand.Execute(monitor.Index);
+    }
+
     public void UpdateDragOutSettings(DragOutSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);

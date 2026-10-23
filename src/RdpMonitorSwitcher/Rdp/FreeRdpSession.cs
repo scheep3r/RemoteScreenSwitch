@@ -76,6 +76,8 @@ internal sealed class FreeRdpSession : IRdpSession
     public event EventHandler<RemoteFileList>? RemoteFileListReceived;
     public event EventHandler<FileChunk>? FileChunkReceived;
     public event EventHandler<bool>? LocalClipboardAccepted;
+    public event EventHandler<bool>? FocusAgentChanged;
+    public event EventHandler<PixelPoint>? RemoteForeground;
 
     public Func<CertificateInfo, CertificateDecision>? CertificateRequested { get; set; }
 
@@ -349,6 +351,14 @@ internal sealed class FreeRdpSession : IRdpSession
                 case RdpBridgeNative.EventLocalClipboardAccepted:
                     var accepted = a != 0;
                     Post(() => LocalClipboardAccepted?.Invoke(this, accepted));
+                    break;
+                case RdpBridgeNative.EventFocusAgent:
+                    var connected = a != 0;
+                    Post(() => FocusAgentChanged?.Invoke(this, connected));
+                    break;
+                case RdpBridgeNative.EventRemoteForeground:
+                    var point = new PixelPoint(a, b);
+                    Post(() => RemoteForeground?.Invoke(this, point));
                     break;
                 case RdpBridgeNative.EventRemoteClipboard:
                     var info = new RemoteClipboardInfo((a & RdpBridgeNative.ClipText) != 0, (a & RdpBridgeNative.ClipFiles) != 0, (uint)b);

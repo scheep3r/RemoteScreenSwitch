@@ -83,6 +83,12 @@ public sealed class RemoteDesktopController : IDisposable
 
     public event EventHandler<RemoteCursorChange>? CursorChanged;
 
+    /// <summary>The helper on the remote PC connected or went away (see <see cref="IsFocusAgentConnected"/>).</summary>
+    public event EventHandler? FocusAgentChanged;
+
+    /// <summary>A window came to the front on the remote PC (point on its monitor, frame buffer coordinates).</summary>
+    public event EventHandler<PixelPoint>? RemoteForeground;
+
     /// <summary>Informational message for the user (e.g. "reconnecting to apply 3 monitors").</summary>
     public event EventHandler<string>? Notice;
 
@@ -95,6 +101,9 @@ public sealed class RemoteDesktopController : IDisposable
     public string StatusMessage { get; private set; } = "Nicht verbunden";
 
     public ConnectionProfile? Profile => _profile;
+
+    /// <summary>The helper on the remote PC reports the foreground window.</summary>
+    public bool IsFocusAgentConnected { get; private set; }
 
     /// <summary>Layout of the running session (what the frame buffer contains).</summary>
     public MonitorLayout? Layout { get; private set; }
@@ -167,6 +176,7 @@ public sealed class RemoteDesktopController : IDisposable
             _environment.DesktopScaleFactor, _environment.DeviceScaleFactor, _environment.KeyboardLayout,
             profile.RedirectClipboard, profile.UseH264, profile.PlayAudio);
 
+        SetFocusAgent(false);
         var session = _factory.Create();
         var generation = ++_generation;
         session.StateChanged += (_, e) => { if (generation == _generation) OnSessionState(e); };
@@ -175,6 +185,8 @@ public sealed class RemoteDesktopController : IDisposable
         session.FrameAvailable += (_, _) => { if (generation == _generation) FrameAvailable?.Invoke(this, EventArgs.Empty); };
         session.ClipboardTextReceived += (_, t) => { if (generation == _generation) ClipboardTextReceived?.Invoke(this, t); };
         session.CursorChanged += (_, c) => { if (generation == _generation) CursorChanged?.Invoke(this, c); };
+        session.FocusAgentChanged += (_, connected) => { if (generation == _generation) SetFocusAgent(connected); };
+        session.RemoteForeground += (_, p) => { if (generation == _generation) RemoteForeground?.Invoke(this, p); };
         session.CertificateRequested = info => CertificateHandler?.Invoke(info) ?? CertificateDecision.Reject;
         _session = session;
 
@@ -186,6 +198,15 @@ public sealed class RemoteDesktopController : IDisposable
         SetState(state, DisconnectReason.None,
             state == ConnectionState.Reconnecting ? $"Verbinde erneut (Versuch {_reconnectAttempt}) …" : $"Verbinde mit {profile.DisplayName} …");
         session.Connect(parameters);
+    }
+
+    private void SetFocusAgent(bool connected)
+    {
+        if (IsFocusAgentConnected == connected)
+            return;
+        IsFocusAgentConnected = connected;
+        _log.LogInformation("Remote helper {State}", connected ? "connected" : "disconnected");
+        FocusAgentChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnSessionState(SessionStateChange change)
@@ -219,6 +240,7 @@ public sealed class RemoteDesktopController : IDisposable
         _debounceTimer?.Dispose();
         _confirmTimer?.Dispose();
         _pending = null;
+        SetFocusAgent(false);
 
         if (_relayoutReconnect && change.Reason == DisconnectReason.User)
         {

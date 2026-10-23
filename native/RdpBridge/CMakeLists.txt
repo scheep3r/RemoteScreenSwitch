@@ -17,6 +17,7 @@ add_library(RdpBridge SHARED
     src/rdpbridge.c
     src/rb_pointer.c
     src/rb_clipboard.c
+    src/rb_focus.c
 )
 
 target_include_directories(RdpBridge PRIVATE include)

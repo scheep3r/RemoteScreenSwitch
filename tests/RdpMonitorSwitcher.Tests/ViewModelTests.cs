@@ -460,4 +460,52 @@ public sealed class MainViewModelTests : IDisposable
         Assert.False(reloaded.ToolbarVisible);
         Assert.Equal("office-pc", reloaded.Profiles[0].Host);
     }
+
+    [Fact]
+    public void RemoteForeground_SwitchesMainViewToThatMonitor()
+    {
+        var session = Connect(3);
+
+        session.RaiseRemoteForeground(1920 * 2 + 960, 540); // centre of monitor 3
+
+        Assert.Equal(2, _vm.MainView.SelectedIndex);
+    }
+
+    [Fact]
+    public void RemoteForeground_OnMonitorShownInSeparateWindow_KeepsMainView()
+    {
+        var session = Connect(3);
+        _vm.OpenMonitorWindowCommand.Execute(1);
+
+        session.RaiseRemoteForeground(1920 + 960, 540);
+
+        Assert.Equal(0, _vm.MainView.SelectedIndex);
+    }
+
+    [Fact]
+    public void RemoteForeground_IsIgnoredWhenDisabled()
+    {
+        var session = Connect(3);
+        _vm.UpdateFollowRemoteForeground(false);
+
+        session.RaiseRemoteForeground(1920 + 960, 540);
+
+        Assert.Equal(0, _vm.MainView.SelectedIndex);
+        Assert.False(new SettingsStore(_dir.File("settings.json")).Load().FollowRemoteForeground);
+    }
+
+    [Fact]
+    public void FocusAgentState_IsExposedAndResetOnDisconnect()
+    {
+        var session = Connect(2);
+        var changes = new List<string?>();
+        _vm.PropertyChanged += (_, e) => changes.Add(e.PropertyName);
+
+        session.RaiseFocusAgent(true);
+        Assert.True(_vm.IsFocusAgentConnected);
+        Assert.Contains(nameof(MainViewModel.IsFocusAgentConnected), changes);
+
+        session.RaiseDisconnected(DisconnectReason.Network);
+        Assert.False(_vm.IsFocusAgentConnected);
+    }
 }

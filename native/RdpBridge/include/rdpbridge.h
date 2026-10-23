@@ -28,7 +28,7 @@ extern "C" {
 #endif
 #define RB_CALL __cdecl
 
-#define RB_API_VERSION 3
+#define RB_API_VERSION 4
 
 /* Return codes */
 #define RB_OK 0
@@ -60,6 +60,14 @@ extern "C" {
 #define RB_EVENT_CLIPBOARD_READY 3
 #define RB_EVENT_REMOTE_CLIPBOARD 4       /* a = RB_CLIP_* flags, b = sequence number */
 #define RB_EVENT_LOCAL_CLIPBOARD_ACCEPTED 5 /* server answered our format list: a = 1 ok, 0 failed */
+#define RB_EVENT_FOCUS_AGENT 6            /* helper on the remote PC: a = 1 connected, 0 gone */
+#define RB_EVENT_REMOTE_FOREGROUND 7      /* a window came to the front: a, b = centre of its monitor
+                                             in remote desktop coordinates */
+
+/* Dynamic virtual channel of the remote helper ("RdpMonitorSwitcher.exe --agent").
+   Each message: uint32 type, int32 x, int32 y (little endian). */
+#define RB_FOCUS_CHANNEL_NAME "RdpMonitorSwitcher.Focus"
+#define RB_FOCUS_MSG_FOREGROUND 1
 
 /* Content of the remote clipboard (RB_EVENT_REMOTE_CLIPBOARD) */
 #define RB_CLIP_TEXT 0x1

@@ -19,6 +19,8 @@ internal sealed class FakeSession : IRdpSession
     public event EventHandler<RemoteFileList>? RemoteFileListReceived;
     public event EventHandler<FileChunk>? FileChunkReceived;
     public event EventHandler<bool>? LocalClipboardAccepted;
+    public event EventHandler<bool>? FocusAgentChanged;
+    public event EventHandler<PixelPoint>? RemoteForeground;
 
     /// <summary>Last local file offer and how the simulated remote PC answers it (null = never).</summary>
     public LocalFileOffer? Offer { get; private set; }
@@ -145,6 +147,10 @@ internal sealed class FakeSession : IRdpSession
     public void RaiseClipboard(string text) => ClipboardTextReceived?.Invoke(this, text);
 
     public void RaiseCursor(RemoteCursorChange change) => CursorChanged?.Invoke(this, change);
+
+    public void RaiseFocusAgent(bool connected) => FocusAgentChanged?.Invoke(this, connected);
+
+    public void RaiseRemoteForeground(int x, int y) => RemoteForeground?.Invoke(this, new PixelPoint(x, y));
 }
 
 internal sealed class FakeSessionFactory : IRdpSessionFactory

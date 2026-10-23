@@ -108,6 +108,10 @@ struct rb_session
 /* rb_pointer.c */
 BOOL rb_pointer_register(rdpContext* context);
 
+/* rb_focus.c */
+BOOL rb_focus_register_provider(void);
+BOOL rb_focus_add_channel(rdpSettings* settings);
+
 /* rb_clipboard.c */
 void rb_clipboard_init(rb_session* session, CliprdrClientContext* cliprdr);
 void rb_clipboard_uninit(rb_session* session, CliprdrClientContext* cliprdr);

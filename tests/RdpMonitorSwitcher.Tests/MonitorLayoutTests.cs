@@ -4,6 +4,21 @@ namespace RdpMonitorSwitcher.Tests;
 
 public class MonitorLayoutTests
 {
+    [Theory]
+    [InlineData(10, 10, 0)]
+    [InlineData(1919, 1079, 0)]
+    [InlineData(1920, 0, 1)]
+    [InlineData(4000, 500, 2)]
+    [InlineData(-50, 500, 0)]     // left of everything: nearest
+    [InlineData(9000, 500, 2)]    // right of everything: nearest
+    [InlineData(2400, 1100, 1)]   // just below the shorter monitor 2: nearest is monitor 2
+    public void FindMonitorAt_ReturnsContainingOrNearestMonitor(int x, int y, int expected)
+    {
+        var layout = MonitorLayout.CreateRow([new(1920, 1080), new(1280, 1024), new(1920, 1200)]);
+
+        Assert.Equal(expected, layout.FindMonitorAt(new PixelPoint(x, y)).Index);
+    }
+
     [Fact]
     public void CreateRow_PlacesMonitorsLeftToRightWithPrimaryAtOrigin()
     {

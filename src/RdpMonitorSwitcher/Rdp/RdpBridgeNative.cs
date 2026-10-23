@@ -7,7 +7,7 @@ internal static class RdpBridgeNative
 {
     private const string Dll = "RdpBridge.dll";
 
-    public const int ApiVersion = 3;
+    public const int ApiVersion = 4;
 
     public const int Ok = 0;
     public const int NotSupported = -3;
@@ -22,6 +22,8 @@ internal static class RdpBridgeNative
     public const int EventClipboardReady = 3;
     public const int EventRemoteClipboard = 4;
     public const int EventLocalClipboardAccepted = 5;
+    public const int EventFocusAgent = 6;
+    public const int EventRemoteForeground = 7;
     public const int ClipText = 0x1;
     public const int ClipFiles = 0x2;
     public const uint FileAttributeDirectory = 0x10;

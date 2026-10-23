@@ -140,7 +140,11 @@ internal sealed class UpdateService
         var source = FindPackageRoot(staging);
         _log.LogInformation("Installing update {Version} from {Source}", release.Version, source);
         _main.Controller.Disconnect();
-        await Task.Run(() => ReplaceFiles(source, AppDirectory));
+        await Task.Run(() =>
+        {
+            Agent.AgentSetup.Stop(); // started again by the new version
+            ReplaceFiles(source, AppDirectory);
+        });
 
         Process.Start(new ProcessStartInfo(Path.Combine(AppDirectory, ExeName)) { UseShellExecute = false, WorkingDirectory = AppDirectory });
         Application.Current.Shutdown();

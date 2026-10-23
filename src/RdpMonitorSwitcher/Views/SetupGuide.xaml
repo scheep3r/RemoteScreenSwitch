@@ -11,6 +11,7 @@
 
         <!-- Fold-out header: a centered pill with a chevron -->
         <Style x:Key="GuideExpander" TargetType="Expander">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Expander">
@@ -55,6 +56,7 @@
 
         <!-- Small inline fold-out ("show steps anyway") -->
         <Style x:Key="InlineExpander" TargetType="Expander">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Expander">
@@ -114,6 +116,7 @@
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
         <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
             <Setter Property="FontSize" Value="15" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
@@ -130,6 +133,7 @@
             <Setter Property="Margin" Value="12,0,0,0" />
         </Style>
         <Style x:Key="BadgeText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
             <Setter Property="FontSize" Value="11.5" />
             <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
@@ -158,6 +162,7 @@
         </Style>
 
         <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="FontSize" Value="13.5" />
             <Setter Property="LineHeight" Value="20" />
