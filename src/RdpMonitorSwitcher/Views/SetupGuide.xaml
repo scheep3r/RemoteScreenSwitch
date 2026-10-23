@@ -313,6 +313,55 @@
                     </Expander>
                 </StackPanel>
             </Border>
+
+            <TextBlock Text="EXTRA" FontSize="11.5" FontWeight="SemiBold" LineHeight="Auto"
+                       Foreground="{StaticResource GuideSubtleBrush}" Margin="4,10,0,10" />
+
+            <!-- Wake-on-LAN -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource CardIcon}" Background="#FF4A3F22">
+                            <TextBlock Style="{StaticResource CardIconGlyph}" Text="&#xE7E8;" Foreground="#FFFFD27A" />
+                        </Border>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}" Background="#FF5C4A1E">
+                            <TextBlock Style="{StaticResource BadgeText}" Text="Optional" Foreground="#FFFFE8B0" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource CardTitle}" Text="Wake-on-LAN: PC aus der Ferne einschalten" />
+                            <TextBlock Style="{StaticResource CardSubtitle}" Text="Einmalig am Remote-PC, am besten direkt davor sitzend. Der PC muss per Kabel im Netz hängen." />
+                        </StackPanel>
+                    </DockPanel>
+                    <ContentControl Style="{StaticResource Step}" Tag="1">
+                        <TextBlock><Bold>BIOS/UEFI:</Bold> Wake-on-LAN einschalten (heißt je nach Hersteller z. B. „Resume by PCI-E Device“ oder „Power On by PCI-E“) und <Bold>ErP / Deep Sleep</Bold> ausschalten – sonst bekommt die Netzwerkkarte im ausgeschalteten Zustand keinen Strom.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="2">
+                        <TextBlock><Bold>Netzwerktreiber vom Hersteller</Bold> installieren (Mainboard-Supportseite oder z. B. Realtek/Intel). Der Standardtreiber von Windows bietet oft gar keine Wake-on-LAN-Optionen.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="3">
+                        <TextBlock><Bold>Geräte-Manager → Netzwerkadapter → Eigenschaften:</Bold> unter „Erweitert“ „Wake on Magic Packet“ aktivieren; unter „Energieverwaltung“ „Gerät kann den Computer aus dem Ruhezustand aktivieren“ und „Nur Magic Packet …“ anhaken.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="4">
+                        <TextBlock><Bold>Schnellstart ausschalten:</Bold> Systemsteuerung → Energieoptionen → „Auswählen, was beim Drücken von Netzschaltern geschehen soll“ → „Einige Einstellungen sind momentan nicht verfügbar“ → Haken bei „Schnellstart aktivieren“ entfernen.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="5">
+                        <TextBlock><Bold>FRITZ!Box:</Bold> Heimnetz → Netzwerk → Netzwerkeinstellungen → „Zugriff für Anwendungen zulassen“ einschalten. Der FRITZ!Box-Benutzer braucht das Recht „FRITZ!Box Einstellungen“.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="6">
+                        <TextBlock>In dieser App: <Bold>Verbinden … → PC aus der Ferne einschalten</Bold> → Methode und Gerät wählen. Danach erscheint hier der Knopf „PC aufwecken &amp; verbinden“.</TextBlock>
+                    </ContentControl>
+                    <Border Background="#FF3A3424" CornerRadius="6" Padding="12,8" Margin="0,14,0,0">
+                        <TextBlock>
+                            <Run Foreground="#FFFFD27A" FontWeight="SemiBold">Von unterwegs:</Run>
+                            Ein ausgeschalteter PC ist über Tailscale nicht erreichbar – das Wecksignal geht deshalb über die FRITZ!Box
+                            (per Router-VPN oder MyFRITZ!-Adresse). Mit Tailscale außerdem „Run unattended“ aktivieren (Variante A), damit der PC nach dem Hochfahren ohne Anmeldung erreichbar ist.
+                        </TextBlock>
+                    </Border>
+                    <TextBlock Margin="0,12,0,0" FontSize="12.5" Foreground="{StaticResource GuideSubtleBrush}">
+                        Testen: PC normal herunterfahren, dann hier „PC aufwecken &amp; verbinden“ klicken. Die App wartet, bis der PC erreichbar ist, und verbindet dann.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </Expander>
 </UserControl>
