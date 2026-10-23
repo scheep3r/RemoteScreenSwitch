@@ -18,8 +18,10 @@
         <!-- Overlay while not connected -->
         <Border Grid.Row="1" Background="#E61B1B1B"
                 Visibility="{Binding ShowOverlay, Converter={StaticResource BoolToVisibility}}">
-            <ScrollViewer VerticalAlignment="Center" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="640" Margin="16,24">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <!-- MinHeight = viewport: centered while it fits, scrollable from the top when it doesn't -->
+            <Grid MinHeight="{Binding ViewportHeight, RelativeSource={RelativeSource AncestorType=ScrollViewer}}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="720" Margin="16,24">
                 <TextBlock Text="{Binding OverlayText}" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
                     <Button Style="{StaticResource AccentToolButton}" Content="Verbinden …" Padding="16,6"
@@ -38,65 +40,10 @@
                 </StackPanel>
 
                 <!-- Setup guide: how the remote PC can be reached -->
-                <Expander Margin="0,28,0,0" Foreground="{StaticResource TextBrush}"
-                          IsExpanded="{Binding IsFirstRun, Mode=OneTime}"
-                          Visibility="{Binding ShowSetupGuide, Converter={StaticResource BoolToVisibility}}">
-                    <Expander.Header>
-                        <TextBlock Text="Einrichtung: Wie erreiche ich meinen PC?" FontWeight="SemiBold" />
-                    </Expander.Header>
-                    <StackPanel Margin="4,10,0,0">
-                        <StackPanel.Resources>
-                            <Style x:Key="GuideHeading" TargetType="TextBlock">
-                                <Setter Property="FontWeight" Value="SemiBold" />
-                                <Setter Property="FontSize" Value="14" />
-                                <Setter Property="Margin" Value="0,14,0,4" />
-                            </Style>
-                            <Style TargetType="TextBlock">
-                                <Setter Property="TextWrapping" Value="Wrap" />
-                                <Setter Property="Margin" Value="0,2" />
-                            </Style>
-                        </StackPanel.Resources>
-
-                        <TextBlock Style="{StaticResource GuideHeading}" Margin="0,0,0,4" Text="1. Remote-PC vorbereiten (immer nötig)" />
-                        <TextBlock Text="• Windows Pro, Enterprise oder Education – Windows Home kann nicht per Remotedesktop gesteuert werden." />
-                        <TextBlock Text="• Einstellungen → System → Remotedesktop → einschalten." />
-                        <TextBlock Text="• Das Windows-Konto braucht ein Passwort (eine PIN allein reicht nicht). Bei Microsoft-Konten: E-Mail-Adresse und Kontopasswort." />
-                        <TextBlock Text="• Im selben Heimnetz bist du damit fertig: als Host den PC-Namen oder die lokale IP eintragen (z. B. 192.168.178.20)." />
-
-                        <TextBlock Style="{StaticResource GuideHeading}" Text="2. Von unterwegs – Variante A: Tailscale (empfohlen)" />
-                        <TextBlock>
-                            • <Hyperlink NavigateUri="https://tailscale.com/download" RequestNavigate="OnOpenLink" Foreground="#FF6FB2FF">Tailscale</Hyperlink>
-                            auf beiden PCs installieren und mit demselben Konto anmelden. Funktioniert fast überall, auch ohne öffentliche IPv4 (DS-Lite).
-                        </TextBlock>
-                        <TextBlock Text="• Auf dem Remote-PC: Tailscale-Symbol im Infobereich → Preferences → „Run unattended“ aktivieren. Sonst ist der PC nach einem Neustart erst erreichbar, wenn sich jemand anmeldet." />
-                        <TextBlock>
-                            • In der <Hyperlink NavigateUri="https://login.tailscale.com/admin/machines" RequestNavigate="OnOpenLink" Foreground="#FF6FB2FF">Tailscale-Geräteliste</Hyperlink>
-                            beim Remote-PC „Disable key expiry“ wählen, sonst fliegt er etwa alle 180 Tage raus.
-                        </TextBlock>
-                        <TextBlock Text="• Als Host den Tailscale-Namen des PCs (z. B. office-pc) oder seine 100.x.x.x-Adresse eintragen." />
-
-                        <TextBlock Style="{StaticResource GuideHeading}" Text="3. Von unterwegs – Variante B: VPN des Routers (z. B. FRITZ!Box)" />
-                        <TextBlock Text="• FRITZ!Box ab FRITZ!OS 7.50: Internet → Freigaben → VPN (WireGuard) → Verbindung hinzufügen → „Einzelgerät verbinden“. Andere Router haben oft eine ähnliche VPN-Funktion." />
-                        <TextBlock>
-                            • Auf dem lokalen PC die <Hyperlink NavigateUri="https://www.wireguard.com/install/" RequestNavigate="OnOpenLink" Foreground="#FF6FB2FF">WireGuard-App</Hyperlink>
-                            installieren und die Konfigurationsdatei der FRITZ!Box importieren. Vor dem Verbinden das VPN aktivieren.
-                        </TextBlock>
-                        <TextBlock Text="• Als Host die lokale IP des Remote-PCs eintragen (FRITZ!Box → Heimnetz → Netzwerk). Vorteil: Wake-on-LAN über die FRITZ!Box klappt so auch von unterwegs." />
-                        <TextBlock Foreground="{StaticResource SubtleTextBrush}" Text="• Braucht eine öffentliche IPv4- oder IPv6-Adresse. Bei manchen Kabel-/Glasfaser-Anschlüssen (DS-Lite) klappt das nicht zuverlässig – dann Tailscale nehmen." />
-
-                        <TextBlock Style="{StaticResource GuideHeading}" Text="4. Variante C: Portfreigabe (nicht empfohlen)" />
-                        <Border Background="#FF4A1F1C" BorderBrush="{StaticResource ErrorBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,2,0,6">
-                            <TextBlock FontWeight="SemiBold" Margin="0">
-                                ⚠ Warnung: Damit ist der Remotedesktop deines PCs direkt aus dem Internet erreichbar. Solche Ports werden innerhalb von Stunden
-                                automatisch gefunden und mit Passwort-Rateversuchen und Angriffen auf Sicherheitslücken bombardiert. Nutze lieber Variante A oder B.
-                            </TextBlock>
-                        </Border>
-                        <TextBlock Text="• Falls trotzdem: FRITZ!Box → Internet → Freigaben → Portfreigaben → Gerät für Freigaben hinzufügen → Neue Freigabe → Portfreigabe, Protokoll TCP, Port an Gerät 3389, Port extern z. B. 53389." />
-                        <TextBlock Text="• Als Host die MyFRITZ!-Adresse oder öffentliche IP, als Port den externen Port (z. B. 53389)." />
-                        <TextBlock Text="• Mindestens: langes, einzigartiges Passwort, Windows immer aktuell halten, Kontosperrung nach Fehlversuchen aktivieren – und die Freigabe wieder löschen, wenn du sie nicht mehr brauchst." />
-                    </StackPanel>
-                </Expander>
+                <views:SetupGuide Margin="0,32,0,0"
+                                  Visibility="{Binding ShowSetupGuide, Converter={StaticResource BoolToVisibility}}" />
             </StackPanel>
+            </Grid>
             </ScrollViewer>
         </Border>
 

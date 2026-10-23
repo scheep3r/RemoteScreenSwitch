@@ -1,0 +1,312 @@
+<UserControl x:Class="RdpMonitorSwitcher.Views.SetupGuide"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Foreground="{StaticResource TextBrush}">
+    <UserControl.Resources>
+        <FontFamily x:Key="IconFont">Segoe MDL2 Assets</FontFamily>
+        <SolidColorBrush x:Key="CardBrush" Color="#FF242424" />
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#FF363636" />
+        <SolidColorBrush x:Key="LinkBrush" Color="#FF6FB2FF" />
+
+        <!-- Fold-out header: a centered pill with a chevron -->
+        <Style x:Key="GuideExpander" TargetType="Expander">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton HorizontalAlignment="Center" Cursor="Hand" Focusable="False"
+                                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border x:Name="Bd" Background="#FF2A2A2A" BorderBrush="#FF3D3D3D" BorderThickness="1"
+                                                CornerRadius="18" Padding="16,8">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontFamily="{StaticResource IconFont}" Text="&#xE946;" FontSize="15"
+                                                           Foreground="{StaticResource LinkBrush}" VerticalAlignment="Center" />
+                                                <TextBlock Text="Einrichtung: Wie erreiche ich meinen PC?" FontSize="14" FontWeight="SemiBold"
+                                                           Margin="10,0,12,0" VerticalAlignment="Center" />
+                                                <TextBlock x:Name="Chevron" FontFamily="{StaticResource IconFont}" Text="&#xE70D;" FontSize="11"
+                                                           Foreground="{StaticResource SubtleTextBrush}" VerticalAlignment="Center" />
+                                            </StackPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#FF343434" />
+                                            </Trigger>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Chevron" Property="Text" Value="&#xE70E;" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="Body" Visibility="Collapsed" Margin="0,18,0,0" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="Body" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Small inline fold-out ("show steps anyway") -->
+        <Style x:Key="InlineExpander" TargetType="Expander">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton HorizontalAlignment="Left" Cursor="Hand" Focusable="False"
+                                          IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <StackPanel Orientation="Horizontal" Background="Transparent">
+                                            <TextBlock x:Name="Chevron" FontFamily="{StaticResource IconFont}" Text="&#xE76C;" FontSize="10"
+                                                       Foreground="{StaticResource SubtleTextBrush}" VerticalAlignment="Center" />
+                                            <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Chevron" Property="Text" Value="&#xE70D;" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                                <TextBlock Text="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}"
+                                           Foreground="{StaticResource SubtleTextBrush}" />
+                            </ToggleButton>
+                            <ContentPresenter x:Name="Body" Visibility="Collapsed" Margin="0,10,0,0" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="Body" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="18,16" />
+            <Setter Property="Margin" Value="0,0,0,12" />
+        </Style>
+
+        <!-- Round icon left of a card title; Tag = tint -->
+        <Style x:Key="CardIcon" TargetType="Border">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="CornerRadius" Value="17" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CardIconGlyph" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style x:Key="CardSubtitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12.5" />
+            <Setter Property="Foreground" Value="{StaticResource SubtleTextBrush}" />
+            <Setter Property="Margin" Value="0,2,0,0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="Badge" TargetType="Border">
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Padding" Value="9,2,9,3" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Margin" Value="12,0,0,0" />
+        </Style>
+        <Style x:Key="BadgeText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <!-- Numbered step; Tag = number -->
+        <Style x:Key="Step" TargetType="ContentControl">
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContentControl">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="22" Height="22" CornerRadius="11" Background="#FF353535" VerticalAlignment="Top" Margin="0,0,12,0">
+                                <TextBlock Text="{TemplateBinding Tag}" FontSize="11.5" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFD0D0D0" />
+                            </Border>
+                            <ContentPresenter Grid.Column="1" VerticalAlignment="Center" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="LineHeight" Value="20" />
+        </Style>
+        <Style TargetType="Hyperlink">
+            <Setter Property="Foreground" Value="{StaticResource LinkBrush}" />
+            <Setter Property="TextDecorations" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="TextDecorations" Value="Underline" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Expander Style="{StaticResource GuideExpander}" IsExpanded="{Binding IsFirstRun, Mode=OneTime}">
+        <StackPanel>
+            <!-- Remote PC -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource CardIcon}" Background="#FF2B3A4F">
+                            <TextBlock Style="{StaticResource CardIconGlyph}" Text="&#xE7F4;" Foreground="#FF8CC4FF" />
+                        </Border>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}" Background="#FF3A3A3A">
+                            <TextBlock Style="{StaticResource BadgeText}" Text="Immer nötig" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource CardTitle}" Text="Remote-PC vorbereiten" />
+                            <TextBlock Style="{StaticResource CardSubtitle}" Text="Einmalig an dem PC, den du fernsteuern willst." />
+                        </StackPanel>
+                    </DockPanel>
+                    <ContentControl Style="{StaticResource Step}" Tag="1">
+                        <TextBlock>Windows <Bold>Pro</Bold>, Enterprise oder Education – Windows Home lässt sich nicht per Remotedesktop steuern.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="2">
+                        <TextBlock><Bold>Einstellungen → System → Remotedesktop</Bold> einschalten.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="3">
+                        <TextBlock>Das Windows-Konto braucht ein Passwort – eine PIN allein reicht nicht. Bei Microsoft-Konten: E-Mail-Adresse und Kontopasswort.</TextBlock>
+                    </ContentControl>
+                    <Border Background="#FF1E2A1F" CornerRadius="6" Padding="12,8" Margin="0,14,0,0">
+                        <TextBlock>
+                            <Run Foreground="#FF7FD69A" FontWeight="SemiBold">Im selben Heimnetz?</Run>
+                            Dann bist du fertig: als Host den PC-Namen oder die lokale IP eintragen (z. B. 192.168.178.20).
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Text="VON UNTERWEGS – WÄHLE EINE VARIANTE" FontSize="11.5" FontWeight="SemiBold" LineHeight="Auto"
+                       Foreground="{StaticResource SubtleTextBrush}" Margin="4,10,0,10" />
+
+            <!-- A: Tailscale -->
+            <Border Style="{StaticResource Card}" BorderBrush="#FF2F6B45">
+                <StackPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource CardIcon}" Background="#FF1F3A2A">
+                            <TextBlock Style="{StaticResource CardIconGlyph}" Text="&#xE774;" Foreground="#FF7FD69A" />
+                        </Border>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}" Background="#FF245C3A">
+                            <TextBlock Style="{StaticResource BadgeText}" Text="Empfohlen" Foreground="#FFCFF5DC" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource CardTitle}" Text="A · Tailscale" />
+                            <TextBlock Style="{StaticResource CardSubtitle}" Text="Kostenlos, sicher, funktioniert fast überall – auch ohne öffentliche IPv4 (DS-Lite)." />
+                        </StackPanel>
+                    </DockPanel>
+                    <ContentControl Style="{StaticResource Step}" Tag="1">
+                        <TextBlock><Hyperlink NavigateUri="https://tailscale.com/download" RequestNavigate="OnOpenLink">Tailscale</Hyperlink> auf beiden PCs installieren und mit demselben Konto anmelden.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="2">
+                        <TextBlock>Auf dem Remote-PC: Tailscale-Symbol im Infobereich → <Bold>Preferences → Run unattended</Bold>. Sonst ist der PC nach einem Neustart erst erreichbar, wenn sich jemand anmeldet.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="3">
+                        <TextBlock>In der <Hyperlink NavigateUri="https://login.tailscale.com/admin/machines" RequestNavigate="OnOpenLink">Geräteliste</Hyperlink> beim Remote-PC <Bold>Disable key expiry</Bold> wählen – sonst fliegt er etwa alle 180 Tage raus.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="4">
+                        <TextBlock>Als Host den Tailscale-Namen (z. B. office-pc) oder die 100.x.x.x-Adresse eintragen.</TextBlock>
+                    </ContentControl>
+                </StackPanel>
+            </Border>
+
+            <!-- B: router VPN -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource CardIcon}" Background="#FF2B3A4F">
+                            <TextBlock Style="{StaticResource CardIconGlyph}" Text="&#xE72E;" Foreground="#FF8CC4FF" />
+                        </Border>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}" Background="#FF2B3A4F">
+                            <TextBlock Style="{StaticResource BadgeText}" Text="Alternative" Foreground="#FFCFE3FF" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource CardTitle}" Text="B · VPN des Routers (z. B. FRITZ!Box)" />
+                            <TextBlock Style="{StaticResource CardSubtitle}" Text="Keine Zusatz-Software auf dem Remote-PC. Wake-on-LAN klappt so auch von unterwegs." />
+                        </StackPanel>
+                    </DockPanel>
+                    <ContentControl Style="{StaticResource Step}" Tag="1">
+                        <TextBlock>FRITZ!Box ab FRITZ!OS 7.50: <Bold>Internet → Freigaben → VPN (WireGuard) → Verbindung hinzufügen → Einzelgerät verbinden</Bold>. Andere Router haben oft eine ähnliche Funktion.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="2">
+                        <TextBlock>Auf dem lokalen PC die <Hyperlink NavigateUri="https://www.wireguard.com/install/" RequestNavigate="OnOpenLink">WireGuard-App</Hyperlink> installieren und die Konfigurationsdatei der FRITZ!Box importieren. Vor dem Verbinden das VPN aktivieren.</TextBlock>
+                    </ContentControl>
+                    <ContentControl Style="{StaticResource Step}" Tag="3">
+                        <TextBlock>Als Host die lokale IP des Remote-PCs eintragen (FRITZ!Box → Heimnetz → Netzwerk).</TextBlock>
+                    </ContentControl>
+                    <TextBlock Margin="34,12,0,0" FontSize="12.5" Foreground="{StaticResource SubtleTextBrush}">
+                        Braucht eine öffentliche IPv4- oder IPv6-Adresse. Bei manchen Kabel- und Glasfaser-Anschlüssen (DS-Lite) klappt das nicht zuverlässig – dann Variante A nehmen.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!-- C: port forwarding -->
+            <Border Style="{StaticResource Card}" BorderBrush="#FF6B2A26" Background="#FF261E1E">
+                <StackPanel>
+                    <DockPanel>
+                        <Border Style="{StaticResource CardIcon}" Background="#FF4A2422">
+                            <TextBlock Style="{StaticResource CardIconGlyph}" Text="&#xE7BA;" Foreground="#FFFF8A80" />
+                        </Border>
+                        <Border DockPanel.Dock="Right" Style="{StaticResource Badge}" Background="{StaticResource ErrorBrush}">
+                            <TextBlock Style="{StaticResource BadgeText}" Text="Nicht empfohlen" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource CardTitle}" Text="C · Portfreigabe im Router" />
+                            <TextBlock Style="{StaticResource CardSubtitle}" Text="Macht den Remotedesktop direkt aus dem Internet erreichbar." />
+                        </StackPanel>
+                    </DockPanel>
+                    <Border Background="#FF3A1D1B" BorderBrush="#FF8A3530" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,14,0,0">
+                        <TextBlock>
+                            <Run FontWeight="SemiBold" Foreground="#FFFFB4AB">Achtung:</Run>
+                            Offene RDP-Ports werden innerhalb von Stunden automatisch gefunden und mit Passwort-Rateversuchen und Angriffen
+                            auf Sicherheitslücken bombardiert. Nutze lieber Variante A oder B.
+                        </TextBlock>
+                    </Border>
+                    <Expander Style="{StaticResource InlineExpander}" Header="Anleitung trotzdem anzeigen" Margin="0,12,0,0">
+                        <StackPanel>
+                            <ContentControl Style="{StaticResource Step}" Tag="1" Margin="0">
+                                <TextBlock>FRITZ!Box: <Bold>Internet → Freigaben → Portfreigaben → Gerät für Freigaben hinzufügen → Neue Freigabe → Portfreigabe</Bold>, Protokoll TCP, Port an Gerät 3389, Port extern z. B. 53389.</TextBlock>
+                            </ContentControl>
+                            <ContentControl Style="{StaticResource Step}" Tag="2">
+                                <TextBlock>Als Host die MyFRITZ!-Adresse oder öffentliche IP, als Port den externen Port (z. B. 53389).</TextBlock>
+                            </ContentControl>
+                            <ContentControl Style="{StaticResource Step}" Tag="3">
+                                <TextBlock>Mindestens: langes, einzigartiges Passwort, Windows immer aktuell halten, Kontosperrung nach Fehlversuchen aktivieren – und die Freigabe löschen, sobald du sie nicht mehr brauchst.</TextBlock>
+                            </ContentControl>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </Expander>
+</UserControl>
