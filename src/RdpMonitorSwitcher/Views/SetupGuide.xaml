@@ -353,8 +353,11 @@
                     <Border Background="#FF3A3424" CornerRadius="6" Padding="12,8" Margin="0,14,0,0">
                         <TextBlock>
                             <Run Foreground="#FFFFD27A" FontWeight="SemiBold">Von unterwegs:</Run>
-                            Ein ausgeschalteter PC ist über Tailscale nicht erreichbar – das Wecksignal geht deshalb über die FRITZ!Box
-                            (per Router-VPN oder MyFRITZ!-Adresse). Mit Tailscale außerdem „Run unattended“ aktivieren (Variante A), damit der PC nach dem Hochfahren ohne Anmeldung erreichbar ist.
+                            Ein ausgeschalteter PC ist über Tailscale nicht erreichbar – das Wecksignal geht deshalb über die FRITZ!Box.
+                            Am sichersten erreichst du sie über einen <Bold>Tailscale-Subnet-Router</Bold> auf einem Gerät, das immer läuft (z. B. NAS, Raspberry Pi),
+                            oder über das VPN der FRITZ!Box (Variante B) – dann als FRITZ!Box-Adresse ihre IP eintragen (meist 192.168.178.1).
+                            MyFRITZ! mit Port nur als Notlösung: Das macht die FRITZ!Box selbst aus dem Internet erreichbar.
+                            Mit Tailscale außerdem „Run unattended“ aktivieren (Variante A), damit der PC nach dem Hochfahren ohne Anmeldung erreichbar ist.
                         </TextBlock>
                     </Border>
                     <TextBlock Margin="0,12,0,0" FontSize="12.5" Foreground="{StaticResource GuideSubtleBrush}">

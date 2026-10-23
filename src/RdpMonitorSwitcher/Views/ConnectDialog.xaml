@@ -131,9 +131,9 @@
 
                 <TextBlock x:Name="FritzAddressLabel" Grid.Row="1" Text="FRITZ!Box:" />
                 <TextBox x:Name="FritzAddressBox" Grid.Row="1" Grid.Column="1"
-                         ToolTip="Im Heimnetz: fritz.box. Von unterwegs: MyFRITZ!-Adresse mit HTTPS-Port, z. B. abc123xyz.myfritz.net:44312" />
+                         ToolTip="Im Heimnetz: fritz.box. Über Tailscale-Subnet-Router oder Router-VPN: die IP der FRITZ!Box, z. B. 192.168.178.1. Notlösung: MyFRITZ!-Adresse mit HTTPS-Port, z. B. abc123xyz.myfritz.net:44312" />
                 <TextBlock x:Name="FritzAddressHint" Grid.Row="2" Grid.Column="1" FontSize="11" Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,4"
-                           Text="Im Heimnetz „fritz.box“. Von unterwegs die MyFRITZ!-Adresse mit Port (FRITZ!Box → Internet → MyFRITZ!-Konto bzw. Freigaben → FRITZ!Box-Dienste)." />
+                           Text="Im Heimnetz „fritz.box“. Von unterwegs am sichersten über einen Tailscale-Subnet-Router (z. B. auf einem NAS) oder das VPN der FRITZ!Box – dann die IP der FRITZ!Box eintragen (meist 192.168.178.1). Notlösung: MyFRITZ!-Adresse mit Port (macht die FRITZ!Box aus dem Internet erreichbar)." />
                 <TextBlock x:Name="FritzUserLabel" Grid.Row="3" Text="Benutzer:" />
                 <TextBox x:Name="FritzUserBox" Grid.Row="3" Grid.Column="1" ToolTip="FRITZ!Box-Benutzer mit dem Recht „FRITZ!Box Einstellungen“" />
                 <TextBlock x:Name="FritzPasswordLabel" Grid.Row="4" Text="Passwort:" />

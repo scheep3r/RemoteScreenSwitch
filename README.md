@@ -113,7 +113,7 @@ Only the files you copied or dropped can be read by the remote PC, nothing else.
 
 ### Turning the remote PC on (Wake-on-LAN)
 In the connection dialog, under **"PC aus der Ferne einschalten"** (turn on the PC remotely):
-- **Über die FRITZ!Box** (via the FRITZ!Box, works from anywhere): enter the FRITZ!Box address (at home `fritz.box`; away from home your MyFRITZ! address with port, e.g. `abc123.myfritz.net:44312`), a FRITZ!Box user and password, click **"Geräte laden"** (load devices) and pick the remote PC from the list. The MAC address is filled in automatically. The FRITZ!Box password is stored in the Windows Credential Manager.
+- **Über die FRITZ!Box** (via the FRITZ!Box, works from anywhere): enter the FRITZ!Box address (at home `fritz.box`; away from home preferably the FRITZ!Box IP, e.g. `192.168.178.1`, reached through a Tailscale subnet router or the FRITZ!Box VPN; as a fallback your MyFRITZ! address with port, e.g. `abc123.myfritz.net:44312`), a FRITZ!Box user and password, click **"Geräte laden"** (load devices) and pick the remote PC from the list. The MAC address is filled in automatically. The FRITZ!Box password is stored in the Windows Credential Manager.
 - **Magic Packet:** for other routers; only works when your PC is in the same network as the remote PC.
 
 When disconnected, **"⏻ PC aufwecken & verbinden"** (wake PC & connect) sends the wake signal, waits until the PC accepts connections (up to 4 minutes), then connects automatically.
@@ -124,7 +124,9 @@ Requirements on the remote PC (one-time setup):
 3. Turn off Windows **Fast Startup** (Control Panel → Power Options → "Choose what the power buttons do"), or the PC usually can't be woken from "Shut down".
 4. Connect the PC **by cable**; Wake-on-LAN over WiFi almost never works.
 
-FRITZ!Box: *Home Network → Network → Network Settings → "Allow access for applications"* (TR-064) must be on (the default). The FRITZ!Box user needs the right "FRITZ!Box Einstellungen" (FRITZ!Box settings), and for waking from outside also "Zugang auch aus dem Internet erlaubt" (access from the internet allowed) plus enabled MyFRITZ!/internet access to the FRITZ!Box.
+FRITZ!Box: *Home Network → Network → Network Settings → "Allow access for applications"* (TR-064) must be on (the default). The FRITZ!Box user needs the right "FRITZ!Box Einstellungen" (FRITZ!Box settings), and, only when using the MyFRITZ! fallback, also "Zugang auch aus dem Internet erlaubt" (access from the internet allowed) plus enabled MyFRITZ!/internet access to the FRITZ!Box.
+
+**Waking from outside without opening anything:** run Tailscale as a *subnet router* on an always-on device at home (NAS, Raspberry Pi). On a Synology: install Tailscale from the Package Center, then run `sudo tailscale set --advertise-routes=192.168.178.0/24` over SSH and approve the route in the Tailscale admin console. The FRITZ!Box is then reachable at its IP from any device in your tailnet. The router's VPN (e.g. FRITZ!Box WireGuard) works too. MyFRITZ! remote access exposes the FRITZ!Box web interface to the internet; use it only if neither works.
 
 ### Updates
 **⟳** in the toolbar checks GitHub for a new version. If there is one, the app downloads it, checks the SHA-256 checksum, replaces its files and restarts. Settings and saved passwords stay. At startup the app checks silently and only shows a notice. The app folder must be writable (e.g. not under `C:\Program Files`).
