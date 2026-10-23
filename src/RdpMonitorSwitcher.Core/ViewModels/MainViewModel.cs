@@ -114,6 +114,12 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public bool ShowOverlay => IsWaking || OverlayText is not null;
 
+    /// <summary>The "how do I reach my PC" guide below the overlay buttons.</summary>
+    public bool ShowSetupGuide => IsDisconnected && !IsWaking;
+
+    /// <summary>No connection saved yet: the guide starts expanded.</summary>
+    public bool IsFirstRun => _settings.Profiles.Count == 0;
+
     public bool CanCancelReconnect => State == ConnectionState.Reconnecting;
 
     /// <summary>The last used connection can wake its PC (Wake-on-LAN configured).</summary>
@@ -121,7 +127,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
                            _settings.FindProfile(_settings.LastProfileKey)?.CanWake == true;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(CanWake), nameof(OverlayText), nameof(ShowOverlay))]
+    [NotifyPropertyChangedFor(nameof(CanWake), nameof(OverlayText), nameof(ShowOverlay), nameof(ShowSetupGuide))]
     private bool _isWaking;
 
     [ObservableProperty]
@@ -486,6 +492,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(IsConnected));
         OnPropertyChanged(nameof(IsBusy));
         OnPropertyChanged(nameof(IsDisconnected));
+        OnPropertyChanged(nameof(ShowSetupGuide));
         OnPropertyChanged(nameof(StatusText));
         OnPropertyChanged(nameof(StatusDetail));
         OnPropertyChanged(nameof(ConnectButtonText));

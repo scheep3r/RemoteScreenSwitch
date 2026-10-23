@@ -54,8 +54,16 @@ Remote Desktop with TeamViewer-style monitor switching: **one** RDP connection t
 - Group policy "Limit maximum number of monitors" (default 16) must allow at least as many monitors as you want.
 - **No extra software** on the remote PC.
 
+### Reaching the remote PC
+The app speaks plain RDP, so it works on any route RDP gets through. While disconnected, the app shows the same guide under **"Einrichtung: Wie erreiche ich meinen PC?"**.
+- **Same home network:** nothing extra. Enter the PC name or its local IP.
+- **From outside, A – Tailscale (recommended):** see below. Works even without a public IPv4 (DS-Lite).
+- **From outside, B – the router's VPN** (e.g. FRITZ!Box WireGuard, FRITZ!OS 7.50+): connect the VPN, then use the PC's local IP. Wake-on-LAN through the FRITZ!Box then works from outside too. Needs a public IPv4 or IPv6.
+- **From outside, C – port forwarding: not recommended.** RDP exposed directly to the internet gets found and attacked within hours. If you do it anyway: use an external port other than 3389, a long unique password and account lockout, keep Windows updated, and remove the forwarding when you no longer need it.
+
 ### Tailscale
-Works without any special setup. As the host, enter the Tailscale IP (`100.x.y.z`) or the MagicDNS name (`office-pc` or `office-pc.<tailnet>.ts.net`).
+Enable **Run unattended** (tray icon → Preferences) on the remote PC, so it's reachable after a reboot before anyone signs in, and **Disable key expiry** for it in the Tailscale admin console.
+Otherwise works without any special setup. As the host, enter the Tailscale IP (`100.x.y.z`) or the MagicDNS name (`office-pc` or `office-pc.<tailnet>.ts.net`).
 - The first time, a certificate warning appears because the RDP certificate is issued to the computer name. Check it, then click **"Immer vertrauen"** (always trust); it's saved under `%APPDATA%\RdpMonitorSwitcher\…\server`.
 - Login uses NTLM (Kerberos is not available over Tailscale). That's the same as mstsc over Tailscale.
 
