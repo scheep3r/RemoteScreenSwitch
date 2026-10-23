@@ -18,7 +18,6 @@ public partial class SettingsDialog : Window
     public SettingsDialog(DragOutSettings settings, MonitorArrangement arrangement, bool followForeground, bool remoteHelperConnected)
     {
         InitializeComponent();
-        MaxHeight = SystemParameters.WorkArea.Height - 20; // never taller than the screen; content scrolls
         ArrangementBox.SelectedIndex = Math.Max(0, Array.IndexOf(Arrangements, arrangement));
         FollowBox.IsChecked = followForeground;
         RemoteHelperStatus.Text = remoteHelperConnected
