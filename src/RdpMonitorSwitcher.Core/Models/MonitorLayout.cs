@@ -10,10 +10,21 @@ public sealed record RemoteMonitor(int Index, PixelRect Bounds, bool IsPrimary)
     public string Resolution => Bounds.Size.ToString();
 }
 
+/// <summary>Where the other remote monitors sit relative to monitor 1 (the primary).</summary>
+public enum MonitorArrangement
+{
+    /// <summary>Monitor 2, 3, … continue to the right of monitor 1.</summary>
+    Right,
+
+    /// <summary>Monitor 2, 3, … continue to the left of monitor 1.</summary>
+    Left,
+}
+
 /// <summary>
-/// The monitor layout declared to the server. Monitors are placed left to right without gaps,
-/// top-aligned, with monitor 1 as primary at (0,0). This satisfies the RDP/FreeRDP rules:
-/// primary at the origin, no overlaps, no gaps.
+/// The monitor layout declared to the server. Monitors are placed in one row without gaps,
+/// top-aligned, with monitor 1 as primary; the others continue to its right or left. Bounds are
+/// frame buffer positions (always ≥ 0); the bridge shifts them so the primary is at (0,0) as RDP
+/// requires, with monitors on the left at negative positions.
 /// </summary>
 public sealed class MonitorLayout : IEquatable<MonitorLayout>
 {
@@ -37,7 +48,7 @@ public sealed class MonitorLayout : IEquatable<MonitorLayout>
     public int Count => Monitors.Count;
 
     /// <summary>Creates a row layout from the given monitor sizes after normalising them.</summary>
-    public static MonitorLayout CreateRow(IEnumerable<PixelSize> sizes)
+    public static MonitorLayout CreateRow(IEnumerable<PixelSize> sizes, MonitorArrangement arrangement = MonitorArrangement.Right)
     {
         ArgumentNullException.ThrowIfNull(sizes);
         var list = sizes.Select(Normalize).ToList();
@@ -46,18 +57,22 @@ public sealed class MonitorLayout : IEquatable<MonitorLayout>
         if (list.Count > MaxMonitors)
             throw new ArgumentException($"At most {MaxMonitors} monitors are supported.", nameof(sizes));
 
-        var monitors = new List<RemoteMonitor>(list.Count);
+        var bounds = new PixelRect[list.Count];
         var x = 0;
-        for (var i = 0; i < list.Count; i++)
+        // Fill the row from the left: monitor 1 first (Right) or last (Left).
+        foreach (var i in arrangement == MonitorArrangement.Left ? Enumerable.Range(0, list.Count).Reverse() : Enumerable.Range(0, list.Count))
         {
-            monitors.Add(new RemoteMonitor(i, new PixelRect(x, 0, list[i].Width, list[i].Height), i == 0));
+            bounds[i] = new PixelRect(x, 0, list[i].Width, list[i].Height);
             x += list[i].Width;
         }
-        return new MonitorLayout(monitors);
+        return new MonitorLayout(bounds.Select((b, i) => new RemoteMonitor(i, b, i == 0)).ToList());
     }
 
-    public static MonitorLayout CreateUniform(int count, PixelSize size) =>
-        CreateRow(Enumerable.Repeat(size, count));
+    public static MonitorLayout CreateUniform(int count, PixelSize size, MonitorArrangement arrangement = MonitorArrangement.Right) =>
+        CreateRow(Enumerable.Repeat(size, count), arrangement);
+
+    /// <summary>The monitors from left to right.</summary>
+    public IEnumerable<RemoteMonitor> SpatialOrder => Monitors.OrderBy(m => m.Bounds.X);
 
     /// <summary>
     /// Clamps a size to the limits of MS-RDPEDISP and rounds the width down to an even number

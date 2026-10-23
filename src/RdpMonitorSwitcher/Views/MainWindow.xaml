@@ -122,7 +122,7 @@
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="⟳" Click="OnCheckUpdates"
                         ToolTip="Nach Updates suchen" />
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="⚙" Click="OnSettings"
-                        ToolTip="Einstellungen (Datei-Zone am Rand, Monitor automatisch wechseln)" />
+                        ToolTip="Einstellungen (Datei-Zone, Monitoranordnung, Monitor automatisch wechseln)" />
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="Strg+Alt+Entf"
                         Command="{Binding SendCtrlAltDelCommand}" IsEnabled="{Binding IsConnected}"
                         ToolTip="Strg+Alt+Entf an den Remote-PC senden (Strg+Alt+Ende)" />

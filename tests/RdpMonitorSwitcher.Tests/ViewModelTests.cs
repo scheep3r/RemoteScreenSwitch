@@ -32,6 +32,23 @@ public class MonitorViewModelTests
     }
 
     [Fact]
+    public void WithMonitorsOnTheLeft_ButtonsAndArrowsFollowThePhysicalOrder()
+    {
+        var view = new MonitorViewModel(isMain: true);
+        view.SetMonitors(MonitorLayout.CreateUniform(3, new PixelSize(1920, 1080), MonitorArrangement.Left).Monitors);
+
+        Assert.Equal(["Monitor 3", "Monitor 2", "Monitor 1"], view.MonitorButtons.Select(b => b.Label));
+        Assert.Equal(0, view.SelectedIndex);
+
+        view.PreviousMonitorCommand.Execute(null); // one to the left of monitor 1
+        Assert.Equal(1, view.SelectedIndex);
+
+        view.NextMonitorCommand.Execute(null);
+        view.NextMonitorCommand.Execute(null); // monitor 1 is rightmost: wraps to the leftmost
+        Assert.Equal(2, view.SelectedIndex);
+    }
+
+    [Fact]
     public void NextAndPrevious_WrapAround()
     {
         var view = WithMonitors(3);
@@ -520,5 +537,21 @@ public sealed class MainViewModelTests : IDisposable
 
         session.RaiseDisconnected(DisconnectReason.Network);
         Assert.False(_vm.IsFocusAgentConnected);
+    }
+
+    [Fact]
+    public void ChangingTheArrangement_WhileConnected_ReconnectsWithTheNewLayout()
+    {
+        var session = Connect(2);
+
+        _vm.UpdateMonitorArrangement(MonitorArrangement.Left);
+        _time.Advance(RemoteDesktopController.LayoutDebounce);
+
+        Assert.Equal(1, session.DisconnectCalls);
+        Assert.Contains("Monitoranordnung", _vm.Notice);
+        session.RaiseDisconnected(DisconnectReason.User); // our own disconnect
+        var layout = _factory.Last.ConnectedWith!.Layout;
+        Assert.Equal(0, layout.SpatialOrder.Last().Index); // monitor 1 is now on the right
+        Assert.Equal(MonitorArrangement.Left, new SettingsStore(_dir.File("settings.json")).Load().MonitorArrangement);
     }
 }

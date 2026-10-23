@@ -299,4 +299,33 @@ public class RemoteDesktopControllerTests
         Assert.False(_controller.IsFocusAgentConnected);
         Assert.Single(points);
     }
+
+    [Fact]
+    public void ResizeWithDisplayControl_StillAppliesLive()
+    {
+        var session = ConnectAndEstablish(2);
+        session.RaiseDisplayControlReady();
+
+        _controller.RequestLayout(MonitorLayout.CreateRow([new(1600, 900), new(1920, 1080)]));
+        _time.Advance(RemoteDesktopController.LayoutDebounce);
+
+        Assert.Single(session.LayoutRequests);
+        Assert.Equal(0, session.DisconnectCalls);
+    }
+
+    [Fact]
+    public void ArrangementOnlyChange_ReconnectsInsteadOfUnconfirmableLiveChange()
+    {
+        var session = ConnectAndEstablish(2);
+        session.RaiseDisplayControlReady();
+        var left = MonitorLayout.CreateUniform(2, Hd, MonitorArrangement.Left);
+
+        _controller.RequestLayout(left);
+        _time.Advance(RemoteDesktopController.LayoutDebounce);
+
+        Assert.Empty(session.LayoutRequests);
+        Assert.Equal(1, session.DisconnectCalls);
+        session.RaiseDisconnected(DisconnectReason.User);
+        Assert.Equal(left, _factory.Last.ConnectedWith!.Layout);
+    }
 }

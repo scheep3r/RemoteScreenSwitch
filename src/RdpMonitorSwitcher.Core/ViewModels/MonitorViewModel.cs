@@ -83,7 +83,7 @@ public sealed partial class MonitorViewModel : ObservableObject
         }
 
         MonitorButtons.Clear();
-        foreach (var monitor in monitors)
+        foreach (var monitor in monitors.OrderBy(m => m.Bounds.X)) // as they sit side by side
             MonitorButtons.Add(new MonitorButtonViewModel(monitor, SelectMonitorCommand) { IsSelected = monitor.Index == SelectedIndex });
 
         OnPropertyChanged(nameof(SelectedMonitor));

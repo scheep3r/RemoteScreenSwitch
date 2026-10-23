@@ -293,6 +293,14 @@ public sealed class RemoteDesktopController : IDisposable
         if (_desired.Equals(Layout) || _desired.Equals(_pending))
             return;
 
+        // Same monitor sizes, other positions (monitors moved to the other side of monitor 1): the
+        // desktop size stays the same, so the server would not confirm it with a resize. Reconnect.
+        if (_desired.Sizes.SequenceEqual(Layout.Sizes))
+        {
+            ReconnectForLayout("Die Monitoranordnung wird übernommen");
+            return;
+        }
+
         if (_session.TrySetMonitorLayout(_desired))
         {
             _log.LogInformation("Requested live layout change: {Layout}", _desired);
@@ -322,7 +330,7 @@ public sealed class RemoteDesktopController : IDisposable
     {
         if (_session is null)
             return;
-        Notice?.Invoke(this, $"{why} – die Verbindung wird mit {_desired!.Count} Monitor(en) neu aufgebaut.");
+        Notice?.Invoke(this, $"{why} – die Verbindung wird kurz neu aufgebaut ({_desired!.Count} Monitor(e)). Die Sitzung bleibt erhalten.");
         _relayoutReconnect = true;
         _session.Disconnect();
     }

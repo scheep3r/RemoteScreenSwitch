@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Einstellungen" SizeToContent="Height" Width="500" ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
     <StackPanel Margin="16">
         <TextBlock Text="Dateien vom Remote-PC herausziehen" FontSize="15" FontWeight="SemiBold" />
         <TextBlock TextWrapping="Wrap" Margin="0,6,0,10" Foreground="#555">
@@ -49,6 +50,24 @@
 
         <Separator Margin="0,16" />
 
+        <TextBlock Text="Anordnung der Remote-Monitore" FontSize="15" FontWeight="SemiBold" />
+        <TextBlock TextWrapping="Wrap" Margin="0,6,0,10" Foreground="#555">
+            Legt fest, auf welcher Seite von Monitor 1 die weiteren Monitore des Remote-PCs liegen – also in welche Richtung
+            du ein Fenster über den Bildschirmrand ziehst, um es auf Monitor 2 zu bringen. Stelle es so ein, wie du die
+            Monitorfenster auf deinem PC angeordnet hast.
+        </TextBlock>
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Monitor 2, 3, … liegen" VerticalAlignment="Center" Margin="0,0,12,0" />
+            <ComboBox x:Name="ArrangementBox" Width="200">
+                <ComboBoxItem Content="rechts von Monitor 1" />
+                <ComboBoxItem Content="links von Monitor 1" />
+            </ComboBox>
+        </StackPanel>
+        <TextBlock TextWrapping="Wrap" Margin="0,6,0,0" FontSize="11" Foreground="Gray"
+                   Text="Während einer Verbindung wird sie dafür kurz neu aufgebaut; geöffnete Programme bleiben erhalten." />
+
+        <Separator Margin="0,16" />
+
         <TextBlock Text="Monitor automatisch wechseln" FontSize="15" FontWeight="SemiBold" />
         <TextBlock TextWrapping="Wrap" Margin="0,6,0,10" Foreground="#555">
             Klickst du im Remote-PC z. B. ein Programm in der Taskleiste an, zeigt das Hauptfenster automatisch den Monitor,
@@ -75,4 +94,5 @@
             <Button Content="Abbrechen" IsCancel="True" MinWidth="96" Padding="10,4" />
         </StackPanel>
     </StackPanel>
+    </ScrollViewer>
 </Window>

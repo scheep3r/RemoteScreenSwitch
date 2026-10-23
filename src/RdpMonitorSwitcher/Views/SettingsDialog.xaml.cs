@@ -3,18 +3,23 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using RdpMonitorSwitcher.Agent;
+using RdpMonitorSwitcher.Core.Models;
 using RdpMonitorSwitcher.Core.Services;
 
 namespace RdpMonitorSwitcher.Views;
 
-/// <summary>App-wide settings: the file drag-out zone and following the remote foreground window.</summary>
+/// <summary>App-wide settings: drag-out zone, monitor arrangement and following the remote foreground window.</summary>
 public partial class SettingsDialog : Window
 {
     private static readonly ScreenEdge[] Edges = [ScreenEdge.Right, ScreenEdge.Left, ScreenEdge.Top, ScreenEdge.Bottom];
 
-    public SettingsDialog(DragOutSettings settings, bool followForeground, bool remoteHelperConnected)
+    private static readonly MonitorArrangement[] Arrangements = [MonitorArrangement.Right, MonitorArrangement.Left];
+
+    public SettingsDialog(DragOutSettings settings, MonitorArrangement arrangement, bool followForeground, bool remoteHelperConnected)
     {
         InitializeComponent();
+        MaxHeight = SystemParameters.WorkArea.Height - 20; // never taller than the screen; content scrolls
+        ArrangementBox.SelectedIndex = Math.Max(0, Array.IndexOf(Arrangements, arrangement));
         FollowBox.IsChecked = followForeground;
         RemoteHelperStatus.Text = remoteHelperConnected
             ? "✓ Hilfsprogramm auf dem verbundenen Remote-PC aktiv."
@@ -32,6 +37,8 @@ public partial class SettingsDialog : Window
     public DragOutSettings? Result { get; private set; }
 
     public bool FollowForeground { get; private set; }
+
+    public MonitorArrangement Arrangement { get; private set; }
 
     private void UpdateHelperState()
     {
@@ -78,6 +85,7 @@ public partial class SettingsDialog : Window
             ArmDelayMs = (int)DelaySlider.Value,
         }.Normalized();
         FollowForeground = FollowBox.IsChecked == true;
+        Arrangement = Arrangements[Math.Max(0, ArrangementBox.SelectedIndex)];
         DialogResult = true;
     }
 }

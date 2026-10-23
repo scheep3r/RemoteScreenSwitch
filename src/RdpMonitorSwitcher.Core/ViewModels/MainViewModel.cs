@@ -274,6 +274,17 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     /// <summary>The helper on the remote PC is running and reports the foreground window.</summary>
     public bool IsFocusAgentConnected => _controller.IsFocusAgentConnected;
 
+    /// <summary>Changes on which side the other remote monitors sit; applied to a running session right away.</summary>
+    public void UpdateMonitorArrangement(MonitorArrangement arrangement)
+    {
+        if (_settings.MonitorArrangement == arrangement)
+            return;
+        _settings.MonitorArrangement = arrangement;
+        SaveSettings();
+        if (_controller.Profile is { } profile && State != ConnectionState.Disconnected)
+            _controller.RequestLayout(BuildLayout(profile));
+    }
+
     public void UpdateFollowRemoteForeground(bool enabled)
     {
         _settings.FollowRemoteForeground = enabled;
@@ -470,7 +481,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public MonitorLayout BuildLayout(ConnectionProfile profile)
     {
         if (profile.SizeMode == MonitorSizeMode.Fixed)
-            return MonitorLayout.CreateRow(profile.FixedMonitors);
+            return MonitorLayout.CreateRow(profile.FixedMonitors, _settings.MonitorArrangement);
 
         var count = Math.Clamp(profile.MonitorCount, 1, MonitorLayout.MaxMonitors);
         var mainSize = MainView.ViewPixelSize.IsEmpty ? FallbackMonitorSize : MainView.ViewPixelSize;
@@ -488,7 +499,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             else
                 sizes[i] = mainSize;
         }
-        return MonitorLayout.CreateRow(sizes);
+        return MonitorLayout.CreateRow(sizes, _settings.MonitorArrangement);
     }
 
     private void OnViewGeometryChanged()

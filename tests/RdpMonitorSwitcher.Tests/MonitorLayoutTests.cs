@@ -4,6 +4,31 @@ namespace RdpMonitorSwitcher.Tests;
 
 public class MonitorLayoutTests
 {
+    [Fact]
+    public void CreateRow_Left_PlacesFurtherMonitorsLeftOfThePrimary()
+    {
+        var layout = MonitorLayout.CreateRow([new(1920, 1080), new(1280, 1024), new(2560, 1440)], MonitorArrangement.Left);
+
+        Assert.Equal(new PixelRect(3840, 0, 1920, 1080), layout.Monitors[0].Bounds);
+        Assert.Equal(new PixelRect(2560, 0, 1280, 1024), layout.Monitors[1].Bounds);
+        Assert.Equal(new PixelRect(0, 0, 2560, 1440), layout.Monitors[2].Bounds);
+        Assert.True(layout.Monitors[0].IsPrimary);
+        Assert.Equal(new PixelSize(5760, 1440), layout.DesktopSize);
+        Assert.Equal([2, 1, 0], layout.SpatialOrder.Select(m => m.Index));
+        Assert.Equal(1, layout.FindMonitorAt(new PixelPoint(3000, 500)).Index);
+    }
+
+    [Fact]
+    public void Arrangement_ChangesPositionsButNotSizes()
+    {
+        var right = MonitorLayout.CreateUniform(2, new PixelSize(1920, 1080));
+        var left = MonitorLayout.CreateUniform(2, new PixelSize(1920, 1080), MonitorArrangement.Left);
+
+        Assert.NotEqual(right, left);
+        Assert.Equal(right.Sizes, left.Sizes);
+        Assert.Equal(right.DesktopSize, left.DesktopSize);
+    }
+
     [Theory]
     [InlineData(10, 10, 0)]
     [InlineData(1919, 1079, 0)]

@@ -2,7 +2,7 @@ using RdpMonitorSwitcher.Core.Models;
 
 namespace RdpMonitorSwitcher.Core.Services;
 
-/// <summary>Tracks which remote monitor a view shows; wraps around at both ends.</summary>
+/// <summary>Tracks which remote monitor a view shows. Next/previous move to the monitor on the right/left and wrap around.</summary>
 public sealed class MonitorNavigator
 {
     private IReadOnlyList<RemoteMonitor> _monitors = [];
@@ -58,7 +58,9 @@ public sealed class MonitorNavigator
     {
         if (_monitors.Count < 2)
             return;
-        SelectedIndex = ((SelectedIndex + delta) % _monitors.Count + _monitors.Count) % _monitors.Count;
+        var row = _monitors.OrderBy(m => m.Bounds.X).ToList();
+        var position = row.FindIndex(m => m.Index == SelectedIndex);
+        SelectedIndex = row[((position + delta) % row.Count + row.Count) % row.Count].Index;
         SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 }

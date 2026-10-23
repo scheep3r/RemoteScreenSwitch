@@ -39,11 +39,13 @@ public partial class MainWindow : Window
     private void OnSettings(object sender, RoutedEventArgs e)
     {
         var main = _services.Main;
-        var dialog = new SettingsDialog(main.Settings.DragOut, main.Settings.FollowRemoteForeground, main.IsFocusAgentConnected) { Owner = this };
+        var dialog = new SettingsDialog(main.Settings.DragOut, main.Settings.MonitorArrangement, main.Settings.FollowRemoteForeground,
+            main.IsFocusAgentConnected) { Owner = this };
         if (dialog.ShowDialog() != true || dialog.Result is not { } settings)
             return;
         main.UpdateDragOutSettings(settings);
         main.UpdateFollowRemoteForeground(dialog.FollowForeground);
+        main.UpdateMonitorArrangement(dialog.Arrangement);
     }
 
     private void OnCheckUpdates(object sender, RoutedEventArgs e) => _ = _services.Updates?.CheckAsync(interactive: true);

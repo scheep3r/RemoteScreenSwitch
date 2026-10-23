@@ -215,14 +215,27 @@ static void send_layout(rb_session* s, const rb_monitor* monitors, uint32_t coun
 	if (!layouts)
 		return;
 
+	/* MS-RDPEDISP: the primary monitor is at (0,0); others are relative to it (may be negative). */
+	int32_t origin_x = monitors[0].left;
+	int32_t origin_y = monitors[0].top;
+	for (uint32_t i = 0; i < count; i++)
+	{
+		if (monitors[i].is_primary)
+		{
+			origin_x = monitors[i].left;
+			origin_y = monitors[i].top;
+			break;
+		}
+	}
+
 	rdpSettings* settings = s->context->settings;
 	for (uint32_t i = 0; i < count; i++)
 	{
 		const rb_monitor* m = &monitors[i];
 		DISPLAY_CONTROL_MONITOR_LAYOUT* l = &layouts[i];
 		l->Flags = m->is_primary ? DISPLAY_CONTROL_MONITOR_PRIMARY : 0;
-		l->Left = m->left;
-		l->Top = m->top;
+		l->Left = m->left - origin_x;
+		l->Top = m->top - origin_y;
 		l->Width = (UINT32)m->width;
 		l->Height = (UINT32)m->height;
 		l->PhysicalWidth = m->physical_width_mm;

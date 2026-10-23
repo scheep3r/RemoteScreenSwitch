@@ -32,6 +32,9 @@ public sealed class AppSettings
     /// <summary>Show the monitor of the window that comes to the front (needs the helper on the remote PC).</summary>
     public bool FollowRemoteForeground { get; set; } = true;
 
+    /// <summary>Whether remote monitor 2, 3, … continue to the right or the left of monitor 1.</summary>
+    public MonitorArrangement MonitorArrangement { get; set; } = MonitorArrangement.Right;
+
     public ConnectionProfile? FindProfile(string? key) =>
         key is null ? null : Profiles.FirstOrDefault(p => p.Key == key);
 

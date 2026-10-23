@@ -78,6 +78,8 @@ Otherwise works without any special setup. As the host, enter the Tailscale IP (
 ### One window per monitor
 **⧉ Fenster je Monitor** (or `Ctrl+Alt+M`) opens every other remote monitor in its own window. Each window can be dragged to any local monitor, resized, maximized or switched to fullscreen. All windows share **the same** RDP session; you can drag remote windows across. Closing a monitor window does not close the session. The app remembers each monitor window's position.
 
+**Monitor arrangement:** by default, remote monitor 2, 3, … continue to the **right** of monitor 1. If your monitor windows sit the other way round on your local screens, set **⚙ → Anordnung der Remote-Monitore → links von Monitor 1**. Dragging a remote window across the edge then goes in the same direction as on your desk. The monitor buttons and ◀ ▶ (`Ctrl+Alt+←/→`) follow the physical order. While connected, the change reconnects briefly; the session and its open programs stay.
+
 ### Shortcuts (while the remote screen has focus)
 | Keys | Action |
 |---|---|
