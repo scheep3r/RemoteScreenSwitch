@@ -281,16 +281,20 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// A window came to the front on the remote PC: show its monitor in the main window,
-    /// unless the main window or a separate monitor window already shows it.
+    /// A window came to the front on the remote PC: if a separate monitor window shows its monitor,
+    /// raise that window (without taking the focus); otherwise show the monitor in the main window.
     /// </summary>
     private void FollowRemoteForeground(PixelPoint point)
     {
         if (!_settings.FollowRemoteForeground || !IsConnected || _controller.Layout is not { } layout)
             return;
         var monitor = layout.FindMonitorAt(point);
-        if (AllViews.Any(view => view.SelectedIndex == monitor.Index))
+        if (AllViews.FirstOrDefault(view => view.SelectedIndex == monitor.Index) is { } shown)
+        {
+            if (!shown.IsMain)
+                _windows.RaiseMonitorWindow(shown);
             return;
+        }
         _log.LogDebug("Following the remote foreground window to monitor {Monitor}", monitor.Number);
         MainView.SelectMonitorCommand.Execute(monitor.Index);
     }

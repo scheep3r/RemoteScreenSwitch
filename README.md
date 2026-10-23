@@ -130,7 +130,7 @@ FRITZ!Box: *Home Network → Network → Network Settings → "Allow access for 
 **⟳** in the toolbar checks GitHub for a new version. If there is one, the app downloads it, checks the SHA-256 checksum, replaces its files and restarts. Settings and saved passwords stay. At startup the app checks silently and only shows a notice. The app folder must be writable (e.g. not under `C:\Program Files`).
 
 ### Following the active window (optional helper on the remote PC)
-When you click a program in the remote taskbar (or Alt+Tab to it), the main window switches to the monitor that program is on. If a separate monitor window already shows that monitor, nothing changes. Switch it off in **⚙ → Monitor automatisch wechseln**.
+When you click a program in the remote taskbar (or Alt+Tab to it), the main window switches to the monitor that program is on. If a separate monitor window already shows that monitor, that window is brought to the front instead (restored if minimized, without taking the keyboard focus). Switch it off in **⚙ → Monitor automatisch wechseln**.
 
 RDP doesn't tell the client where windows are, so this needs a small helper on the remote PC:
 1. Copy the app to the remote PC, start it there once, open **⚙** and click **"Auf diesem PC einrichten"**.

@@ -200,6 +200,8 @@ internal sealed class FakeWindowService : IWindowService
     public void ShowMonitorWindow(MonitorViewModel view) => Open.Add(view);
     public void CloseMonitorWindow(MonitorViewModel view) => Open.Remove(view);
     public void ActivateMonitorWindow(MonitorViewModel view) => Activations++;
+    public List<MonitorViewModel> Raised { get; } = [];
+    public void RaiseMonitorWindow(MonitorViewModel view) => Raised.Add(view);
 }
 
 internal sealed class FakeEnvironment : ILocalEnvironmentProvider

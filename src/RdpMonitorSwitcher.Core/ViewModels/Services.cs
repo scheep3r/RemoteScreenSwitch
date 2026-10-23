@@ -27,6 +27,9 @@ public interface IWindowService
     void CloseMonitorWindow(MonitorViewModel view);
 
     void ActivateMonitorWindow(MonitorViewModel view);
+
+    /// <summary>Restores and raises the window above other windows without taking the keyboard focus.</summary>
+    void RaiseMonitorWindow(MonitorViewModel view);
 }
 
 /// <summary>Provides local values such as DPI and keyboard layout at connect time.</summary>

@@ -1,4 +1,6 @@
 using System.Windows;
+using System.Windows.Interop;
+using RdpMonitorSwitcher.Infrastructure;
 using RdpMonitorSwitcher.Core.ViewModels;
 using RdpMonitorSwitcher.Views;
 
@@ -56,6 +58,19 @@ internal sealed class WindowService : IWindowService
         if (window.WindowState == WindowState.Minimized)
             window.WindowState = WindowState.Normal;
         window.Activate();
+    }
+
+    public void RaiseMonitorWindow(MonitorViewModel view)
+    {
+        if (!_windows.TryGetValue(view, out var window))
+            return;
+        var hwnd = new WindowInteropHelper(window).Handle;
+        if (hwnd == 0)
+            return;
+        if (window.WindowState == WindowState.Minimized)
+            NativeMethods.ShowWindow(hwnd, NativeMethods.SW_SHOWNOACTIVATE);
+        NativeMethods.SetWindowPos(hwnd, NativeMethods.HWND_TOP, 0, 0, 0, 0,
+            NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOACTIVATE);
     }
 
     private static void Cascade(Window window, int index)

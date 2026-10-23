@@ -472,7 +472,7 @@ public sealed class MainViewModelTests : IDisposable
     }
 
     [Fact]
-    public void RemoteForeground_OnMonitorShownInSeparateWindow_KeepsMainView()
+    public void RemoteForeground_OnMonitorShownInSeparateWindow_RaisesThatWindowAndKeepsMainView()
     {
         var session = Connect(3);
         _vm.OpenMonitorWindowCommand.Execute(1);
@@ -480,6 +480,19 @@ public sealed class MainViewModelTests : IDisposable
         session.RaiseRemoteForeground(1920 + 960, 540);
 
         Assert.Equal(0, _vm.MainView.SelectedIndex);
+        Assert.Equal(1, Assert.Single(_windows.Raised).SelectedIndex);
+        Assert.Equal(0, _windows.Activations); // raised, not activated: the keyboard focus stays where it is
+    }
+
+    [Fact]
+    public void RemoteForeground_OnMonitorShownInMainWindow_RaisesNothing()
+    {
+        var session = Connect(3);
+        _vm.OpenMonitorWindowCommand.Execute(1);
+
+        session.RaiseRemoteForeground(960, 540);
+
+        Assert.Empty(_windows.Raised);
     }
 
     [Fact]

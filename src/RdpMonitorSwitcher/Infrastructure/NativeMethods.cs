@@ -23,6 +23,17 @@ internal static class NativeMethods
     public const int VK_LBUTTON = 0x01;
     public const int VK_ESCAPE = 0x1B;
     public const uint MAPVK_VK_TO_VSC_EX = 4;
+    public const int SW_SHOWNOACTIVATE = 4;
+    public const nint HWND_TOP = 0;
+    public const uint SWP_NOSIZE = 0x0001;
+    public const uint SWP_NOMOVE = 0x0002;
+    public const uint SWP_NOACTIVATE = 0x0010;
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(nint hwnd, int command);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SetWindowPos(nint hwnd, nint insertAfter, int x, int y, int cx, int cy, uint flags);
 
     [StructLayout(LayoutKind.Sequential)]
     public struct KBDLLHOOKSTRUCT
