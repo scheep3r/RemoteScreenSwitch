@@ -196,7 +196,7 @@ public sealed class RemoteDesktopController : IDisposable
 
         _log.LogInformation("Connecting: {Parameters}", parameters);
         SetState(state, DisconnectReason.None,
-            state == ConnectionState.Reconnecting ? $"Verbinde erneut (Versuch {_reconnectAttempt}) …" : $"Verbinde mit {profile.DisplayName} …");
+            state == ConnectionState.Reconnecting ? $"Verbinde erneut (Versuch {_reconnectAttempt}) …" : $"Verbinde mit {profile.Label} …");
         session.Connect(parameters);
     }
 
@@ -219,7 +219,7 @@ public sealed class RemoteDesktopController : IDisposable
             case ConnectionState.Connected:
                 _reconnectAttempt = 0;
                 NextReconnectDelay = null;
-                SetState(ConnectionState.Connected, DisconnectReason.None, $"Verbunden mit {_profile!.DisplayName}");
+                SetState(ConnectionState.Connected, DisconnectReason.None, $"Verbunden mit {_profile!.Label}");
                 if (_desired is not null && !_desired.Equals(Layout))
                     ApplyDesiredLayout();
                 break;

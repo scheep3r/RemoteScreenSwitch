@@ -57,6 +57,7 @@ public partial class ConnectDialog : Window
     {
         _loading = true;
         HostBox.Text = p.Host;
+        NameBox.Text = p.Name;
         PortBox.Text = p.Port.ToString(CultureInfo.InvariantCulture);
         UserBox.Text = string.IsNullOrEmpty(p.Domain) ? p.Username : $"{p.Domain}\\{p.Username}";
         PasswordBox.Password = password ?? "";
@@ -183,6 +184,7 @@ public partial class ConnectDialog : Window
         var profile = new ConnectionProfile
         {
             Host = HostBox.Text.Trim(),
+            Name = NameBox.Text.Trim(),
             Username = UserBox.Text.Trim(),
             SavePassword = SavePasswordBox.IsChecked == true,
             SizeMode = FixedModeBox.IsChecked == true ? MonitorSizeMode.Fixed : MonitorSizeMode.FitToWindow,

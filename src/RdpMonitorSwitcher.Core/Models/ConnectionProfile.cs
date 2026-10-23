@@ -37,6 +37,9 @@ public enum RemoteScaling
 public sealed class ConnectionProfile
 {
     public string Host { get; set; } = "";
+
+    /// <summary>Optional name shown instead of the address (window title, status, notices).</summary>
+    public string Name { get; set; } = "";
     public int Port { get; set; } = 3389;
     public string Username { get; set; } = "";
     public string Domain { get; set; } = "";
@@ -75,7 +78,11 @@ public sealed class ConnectionProfile
     public string FritzBoxCredentialKey =>
         $"fritzbox|{FritzBoxAddress.Trim().ToLowerInvariant()}|{FritzBoxUser.Trim().ToLowerInvariant()}";
 
+    /// <summary>Address as typed (connection dialog only).</summary>
     public string DisplayName => Port == 3389 ? Host : $"{Host}:{Port}";
+
+    /// <summary>What the app shows for this connection: the name, never the address.</summary>
+    public string Label => string.IsNullOrWhiteSpace(Name) ? "Remote-PC" : Name.Trim();
 
     /// <summary>Key used for the credential store and for matching saved profiles.</summary>
     public string Key => $"{Host.Trim().ToLowerInvariant()}:{Port}|{Username.Trim().ToLowerInvariant()}";

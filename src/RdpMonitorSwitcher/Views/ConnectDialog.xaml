@@ -46,6 +46,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Text="Remote-PC:" />
@@ -63,21 +64,25 @@
         <TextBlock Grid.Row="1" Grid.Column="1" FontSize="11" Foreground="Gray" Margin="0,0,0,6" TextWrapping="Wrap"
                    Text="z. B. büro-pc, 192.168.1.20 oder über Tailscale 100.64.1.5 / büro-pc.tailnet.ts.net" />
 
-        <TextBlock Grid.Row="2" Text="Benutzer:" />
-        <TextBox x:Name="UserBox" Grid.Row="2" Grid.Column="1" ToolTip="Benutzername, DOMÄNE\Benutzer oder benutzer@domäne" />
+        <TextBlock Grid.Row="2" Text="Name:" />
+        <TextBox x:Name="NameBox" Grid.Row="2" Grid.Column="1"
+                 ToolTip="Wird im Fenstertitel und in Meldungen angezeigt – statt der Adresse. Leer lassen = „Remote-PC“." />
 
-        <TextBlock Grid.Row="3" Text="Passwort:" />
-        <PasswordBox x:Name="PasswordBox" Grid.Row="3" Grid.Column="1" />
+        <TextBlock Grid.Row="3" Text="Benutzer:" />
+        <TextBox x:Name="UserBox" Grid.Row="3" Grid.Column="1" ToolTip="Benutzername, DOMÄNE\Benutzer oder benutzer@domäne" />
 
-        <CheckBox x:Name="SavePasswordBox" Grid.Row="4" Grid.Column="1">
+        <TextBlock Grid.Row="4" Text="Passwort:" />
+        <PasswordBox x:Name="PasswordBox" Grid.Row="4" Grid.Column="1" />
+
+        <CheckBox x:Name="SavePasswordBox" Grid.Row="5" Grid.Column="1">
             <TextBlock TextWrapping="Wrap" Margin="0"
                        Text="Passwort speichern (verschlüsselt in der Windows-Anmeldeinformationsverwaltung)" />
         </CheckBox>
 
-        <Separator Grid.Row="5" Grid.ColumnSpan="2" Margin="0,8" />
+        <Separator Grid.Row="6" Grid.ColumnSpan="2" Margin="0,8" />
 
-        <TextBlock Grid.Row="6" Text="Monitore:" VerticalAlignment="Top" Margin="0,4,12,0" />
-        <StackPanel Grid.Row="6" Grid.Column="1">
+        <TextBlock Grid.Row="7" Text="Monitore:" VerticalAlignment="Top" Margin="0,4,12,0" />
+        <StackPanel Grid.Row="7" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
                 <RadioButton x:Name="FitModeBox" GroupName="Mode" Content="An Fenster anpassen, Anzahl:" Checked="OnModeChanged" />
                 <ComboBox x:Name="CountBox" Width="60" Margin="8,0,0,0" />
@@ -89,23 +94,23 @@
             <TextBox x:Name="ResolutionsBox" Margin="20,3,0,3" ToolTip="z. B. 1920x1080, 2560x1440, 1920x1080" />
         </StackPanel>
 
-        <TextBlock Grid.Row="7" Text="Anzeige:" />
-        <ComboBox x:Name="ScalingBox" Grid.Row="7" Grid.Column="1">
+        <TextBlock Grid.Row="8" Text="Anzeige:" />
+        <ComboBox x:Name="ScalingBox" Grid.Row="8" Grid.Column="1">
             <ComboBoxItem Content="An Fenster anpassen" />
             <ComboBoxItem Content="Originalgröße (1:1, mit Scrollen)" />
         </ComboBox>
 
-        <TextBlock Grid.Row="8" Text="Remote-Skalierung:" />
-        <ComboBox x:Name="RemoteScalingBox" Grid.Row="8" Grid.Column="1" />
+        <TextBlock Grid.Row="9" Text="Remote-Skalierung:" />
+        <ComboBox x:Name="RemoteScalingBox" Grid.Row="9" Grid.Column="1" />
 
-        <StackPanel Grid.Row="9" Grid.Column="1" Margin="0,6,0,0">
+        <StackPanel Grid.Row="10" Grid.Column="1" Margin="0,6,0,0">
             <CheckBox x:Name="ClipboardBox" Content="Zwischenablage (Text) teilen" />
             <CheckBox x:Name="AudioBox" Content="Ton des Remote-PCs abspielen" />
             <CheckBox x:Name="H264Box" Content="H.264-Videokompression (weniger Bandbreite)" />
             <CheckBox x:Name="ReconnectBox" Content="Bei Verbindungsabbruch automatisch neu verbinden" />
         </StackPanel>
 
-        <Expander x:Name="WakeExpander" Grid.Row="10" Grid.ColumnSpan="2" Margin="0,10,0,0"
+        <Expander x:Name="WakeExpander" Grid.Row="11" Grid.ColumnSpan="2" Margin="0,10,0,0"
                   Header="PC aus der Ferne einschalten (Wake-on-LAN)">
             <Grid Margin="0,6,0,0">
                 <Grid.ColumnDefinitions>
@@ -151,10 +156,10 @@
             </Grid>
         </Expander>
 
-        <TextBlock x:Name="ErrorText" Grid.Row="11" Grid.ColumnSpan="2" Foreground="#B3261E" TextWrapping="Wrap"
+        <TextBlock x:Name="ErrorText" Grid.Row="12" Grid.ColumnSpan="2" Foreground="#B3261E" TextWrapping="Wrap"
                    Margin="0,8,0,0" Visibility="Collapsed" />
 
-        <StackPanel Grid.Row="12" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+        <StackPanel Grid.Row="13" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
             <Button Content="Verbinden" IsDefault="True" MinWidth="96" Padding="10,4" Margin="0,0,8,0" Click="OnConnect" />
             <Button Content="Abbrechen" IsCancel="True" MinWidth="96" Padding="10,4" />
         </StackPanel>

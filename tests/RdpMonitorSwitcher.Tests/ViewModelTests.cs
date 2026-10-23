@@ -554,4 +554,24 @@ public sealed class MainViewModelTests : IDisposable
         Assert.Equal(0, layout.SpatialOrder.Last().Index); // monitor 1 is now on the right
         Assert.Equal(MonitorArrangement.Left, new SettingsStore(_dir.File("settings.json")).Load().MonitorArrangement);
     }
+
+    [Fact]
+    public void TitleAndStatus_ShowTheNameNeverTheAddress()
+    {
+        var profile = TestProfiles.Office(2);
+        profile.Host = "100.64.1.5";
+        _vm.ConnectWith(new ConnectRequest(profile, "secret"));
+        _factory.Last.RaiseConnected();
+
+        Assert.DoesNotContain("100.64.1.5", _vm.WindowTitle);
+        Assert.DoesNotContain("100.64.1.5", _vm.StatusDetail);
+        Assert.Contains("Remote-PC", _vm.WindowTitle);
+
+        profile.Name = "Büro";
+        _vm.ConnectWith(new ConnectRequest(profile, "secret"));
+        _factory.Last.RaiseConnected();
+
+        Assert.Equal("Büro – RDP Monitor Switcher", _vm.WindowTitle);
+        Assert.Equal("Verbunden mit Büro", _vm.StatusDetail);
+    }
 }

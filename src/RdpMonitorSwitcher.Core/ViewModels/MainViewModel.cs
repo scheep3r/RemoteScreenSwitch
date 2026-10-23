@@ -102,7 +102,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public string ConnectButtonText => State == ConnectionState.Disconnected ? "Verbinden" : "Trennen";
 
     public string WindowTitle => _controller.Profile is { } p && State != ConnectionState.Disconnected
-        ? $"{p.DisplayName} – RDP Monitor Switcher"
+        ? $"{p.Label} – RDP Monitor Switcher"
         : "RDP Monitor Switcher";
 
     /// <summary>Overlay text on the remote view while not connected (null = no overlay).</summary>
@@ -158,7 +158,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             var progress = new Progress<WakeProgress>(p => WakeStatus = p.Message);
             if (!await _waker.WakeAsync(profile, fritzPassword, progress, cts.Token))
             {
-                Notice = $"{profile.DisplayName} ist nach {PcWaker.DefaultTimeout.TotalMinutes:0} Minuten noch nicht erreichbar. " +
+                Notice = $"{profile.Label} ist nach {PcWaker.DefaultTimeout.TotalMinutes:0} Minuten noch nicht erreichbar. " +
                          "Wake-on-LAN im BIOS, „Wake on Magic Packet“ der Netzwerkkarte und den deaktivierten Schnellstart prüfen.";
                 return;
             }

@@ -11,6 +11,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>false</SelfContained>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyTitle>RDP Monitor Switcher</AssemblyTitle>
     <Product>RDP Monitor Switcher</Product>
     <Version>1.2.1</Version>

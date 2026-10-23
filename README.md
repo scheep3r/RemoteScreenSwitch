@@ -69,7 +69,7 @@ Otherwise works without any special setup. As the host, enter the Tailscale IP (
 
 ## 4. Usage
 
-1. **Verbinden** (Connect) → enter host, user (`user`, `DOMAIN\user` or `user@domain`) and password.
+1. **Verbinden** (Connect) → enter host, user (`user`, `DOMAIN\user` or `user@domain`) and password. Optionally give the connection a **Name** (e.g. "Office PC"): the window title, status and messages show that name, never the address. Without a name they show "Remote-PC".
 2. Choose **Monitore** (monitors):
    - *An Fenster anpassen* (fit to window, recommended): enter a count; every remote monitor gets exactly the size of the window showing it, so there are no black bars.
    - *Feste Auflösungen* (fixed resolutions): e.g. `2560x1440, 1920x1080`, matching the remote PC's physical monitors.
