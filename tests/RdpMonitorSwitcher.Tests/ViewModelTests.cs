@@ -364,6 +364,16 @@ public sealed class MainViewModelTests : IDisposable
     }
 
     [Fact]
+    public void LockRemote_SendsWinL()
+    {
+        var session = Connect(1);
+
+        _vm.LockRemoteCommand.Execute(null);
+
+        Assert.Equal([(true, 0x15Bu), (true, 0x26u), (false, 0x26u), (false, 0x15Bu)], session.Keys);
+    }
+
+    [Fact]
     public void PullFiles_FromShortcut_ReachesTheFileTransferWithTheFocusedView()
     {
         Connect(2);

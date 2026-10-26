@@ -35,6 +35,7 @@ public static class VirtualKeys
     public const int D1 = 0x31;
     public const int D9 = 0x39;
     public const int D = 0x44;
+    public const int L = 0x4C;
     public const int M = 0x4D;
     public const int T = 0x54;
     public const int LWin = 0x5B;

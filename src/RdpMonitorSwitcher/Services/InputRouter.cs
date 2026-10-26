@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using Microsoft.Extensions.Logging;
+using Microsoft.Win32;
 using RdpMonitorSwitcher.Core.Models;
 using RdpMonitorSwitcher.Core.Rdp;
 using RdpMonitorSwitcher.Core.Services;
@@ -15,10 +16,12 @@ namespace RdpMonitorSwitcher.Services;
 /// Sends keyboard input to the session while a <see cref="RemoteViewport"/> has the focus and
 /// its window is in the foreground. App shortcuts (Ctrl+Alt+…) are handled locally.
 /// Releases all held keys whenever the focus leaves the remote view or the monitor changes,
-/// so no key stays "stuck" on the remote PC.
+/// so no key stays "stuck" on the remote PC. Win+L only locks the local PC (Windows locks it anyway).
 /// </summary>
 internal sealed class InputRouter : IInputResetter, IDisposable
 {
+    private const uint ControlScanCode = 0x1D;
+
     private readonly MainViewModel _main;
     private readonly Dispatcher _dispatcher;
     private readonly ILogger _log;
@@ -26,7 +29,7 @@ internal sealed class InputRouter : IInputResetter, IDisposable
     private readonly HashSet<int> _swallowedKeys = [];
     private KeyboardHook? _hook;
     private RemoteViewport? _active;
-    private bool _ctrl, _alt, _shift;
+    private bool _ctrl, _alt, _shift, _win;
 
     public InputRouter(MainViewModel main, Dispatcher dispatcher, ILogger<InputRouter> logger)
     {
@@ -42,6 +45,17 @@ internal sealed class InputRouter : IInputResetter, IDisposable
             // Without the hook, Win/Alt+Tab stay local; everything else still works via the hook-less path.
             _log.LogError(ex, "Keyboard hook could not be installed");
         }
+        SystemEvents.SessionSwitch += OnSessionSwitch;
+    }
+
+    /// <summary>
+    /// Locking the local PC moves the keyboard to the lock screen, so key-ups (e.g. of Win from
+    /// Win+L) never reach the hook. Release everything, or the remote PC keeps the keys pressed.
+    /// </summary>
+    private void OnSessionSwitch(object? sender, SessionSwitchEventArgs e)
+    {
+        if (e.Reason is SessionSwitchReason.SessionLock or SessionSwitchReason.ConsoleDisconnect or SessionSwitchReason.RemoteDisconnect)
+            _dispatcher.BeginInvoke(ReleaseAll);
     }
 
     private IRdpSession? Session => _main.IsConnected ? _main.Controller.Session : null;
@@ -116,6 +130,17 @@ internal sealed class InputRouter : IInputResetter, IDisposable
             return true;
         }
 
+        if (key.Down && _win && key.VirtualKey == VirtualKeys.L)
+        {
+            // Windows locks the local PC on Win+L regardless of the hook; don't lock the remote PC too.
+            _swallowedKeys.Add(key.VirtualKey);
+            // A Ctrl tap while Win is down keeps the remote Start menu from opening on the Win release.
+            foreach (var e in _translator.Translate(ControlScanCode, false, true).Concat(_translator.Translate(ControlScanCode, false, false)))
+                session.SendKey(e.Down, e.Scancode);
+            ReleaseAll();
+            return false;
+        }
+
         if (key.Down)
         {
             var command = ShortcutMap.Resolve(key.VirtualKey, _ctrl, _alt, _shift);
@@ -159,11 +184,15 @@ internal sealed class InputRouter : IInputResetter, IDisposable
             case VirtualKeys.Shift or VirtualKeys.LShift or VirtualKeys.RShift:
                 _shift = key.Down;
                 break;
+            case VirtualKeys.LWin or VirtualKeys.RWin:
+                _win = key.Down;
+                break;
         }
     }
 
     public void Dispose()
     {
+        SystemEvents.SessionSwitch -= OnSessionSwitch;
         _hook?.Dispose();
         _hook = null;
     }

@@ -123,6 +123,9 @@
                         ToolTip="Nach Updates suchen" />
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="⚙" Click="OnSettings"
                         ToolTip="Einstellungen (Datei-Zone, Monitoranordnung, Monitor automatisch wechseln)" />
+                <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="🔒 Sperren"
+                        Command="{Binding LockRemoteCommand}" IsEnabled="{Binding IsConnected}"
+                        ToolTip="Nur den Remote-PC sperren (Win+L dort). Win+L auf der Tastatur sperrt nur diesen PC." />
                 <Button DockPanel.Dock="Right" Style="{StaticResource ToolButton}" Content="Strg+Alt+Entf"
                         Command="{Binding SendCtrlAltDelCommand}" IsEnabled="{Binding IsConnected}"
                         ToolTip="Strg+Alt+Entf an den Remote-PC senden (Strg+Alt+Ende)" />

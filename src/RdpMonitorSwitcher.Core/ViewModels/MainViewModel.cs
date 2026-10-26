@@ -465,6 +465,20 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         session.SendKey(false, ctrl);
     }
 
+    /// <summary>Win+L on the remote PC only (pressing Win+L locally locks just the local PC).</summary>
+    [RelayCommand]
+    private void LockRemote()
+    {
+        if (_controller.Session is not { } session || !IsConnected)
+            return;
+        ReleaseInput();
+        const uint win = 0x5B | 0x100, l = 0x26;
+        session.SendKey(true, win);
+        session.SendKey(true, l);
+        session.SendKey(false, l);
+        session.SendKey(false, win);
+    }
+
     public void SaveSettings()
     {
         try

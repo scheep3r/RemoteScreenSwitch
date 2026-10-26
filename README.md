@@ -91,7 +91,7 @@ Otherwise works without any special setup. As the host, enter the Tailscale IP (
 | `Ctrl+Alt+End` | send Ctrl+Alt+Del to the remote PC |
 | `Ctrl+Alt+D` | fetch the selected remote files (while dragging: continue the drag locally; otherwise: local clipboard) |
 
-All other keys, **including the Windows key and Alt+Tab**, go to the remote PC while its screen has focus. To get out locally, click outside the window or leave fullscreen with `Ctrl+Alt+Enter`. When switching monitors or losing focus, all held keys and mouse buttons are released, so nothing gets "stuck" remotely.
+All other keys, **including the Windows key and Alt+Tab**, go to the remote PC while its screen has focus. The exception is `Win+L`: it locks only the local PC (Windows doesn't let apps intercept it). To lock the remote PC, use the **🔒 Sperren** button in the toolbar. To get out locally, click outside the window or leave fullscreen with `Ctrl+Alt+Enter`. When switching monitors or losing focus, all held keys and mouse buttons are released, so nothing gets "stuck" remotely.
 
 ### Getting files out of the remote PC (drag out)
 RDP has no drag & drop channel; while you drag in the remote Explorer, the drag happens entirely on the remote PC. The app therefore takes over the drag:
